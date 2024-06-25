@@ -62,6 +62,24 @@ Following is a good visual representation of the implementation and orchestratio
 
 ### Introduction to Retrieval
 
+In the RAG framework we have two components:
+- The database/knowledge base
+- LLM
+
+For the database component we will use a simple search engine, the one that was implemented during the pre-course workshop. You can either follow along the notes in the course repo [here](https://github.com/alexeygrigorev/build-your-own-search-engine?tab=readme-ov-file) OR watch the workshop [here](https://www.youtube.com/watch?v=nMrGK5QgPVE).
+
+Later in the course, we will replace this search engine with [elasticsearch](https://en.wikipedia.org/wiki/Elasticsearch).
+
+
+Objective for this lecture is:
+1. Put the data from the FAQ documents into the search engine to perform a simple search
+2. Get the results and put them into an LLM
+3. Output will be our answer to the question
+
+![image](https://github.com/peterchettiar/LLMzoomcamp_2024/assets/89821181/1a84e57d-5ceb-4e19-8b38-71bedf0c001d)
+
+Moving forward, as part of the first step, we need to 
+
 ### Preparing the Documents
 
 ### Indexing Documents with mini-Search Library
