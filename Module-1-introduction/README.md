@@ -66,22 +66,61 @@ In the RAG framework we have two components:
 - The database/knowledge base
 - LLM
 
-For the database component we will use a simple search engine, the one that was implemented during the pre-course workshop. You can either follow along the notes in the course repo [here](https://github.com/alexeygrigorev/build-your-own-search-engine?tab=readme-ov-file) OR watch the workshop [here](https://www.youtube.com/watch?v=nMrGK5QgPVE).
+For the database component we will use a simple search engine, the one that was implemented during the pre-course workshop. You can either follow along the notes in the course repo [here](https://github.com/alexeygrigorev/build-your-own-search-engine?tab=readme-ov-file) **OR** watch the workshop [here](https://www.youtube.com/watch?v=nMrGK5QgPVE).
 
-Later in the course, we will replace this search engine with [elasticsearch](https://en.wikipedia.org/wiki/Elasticsearch).
+For now we will use the toy search engine for illustrative purposes but later in the course, we will replace this search engine with [elasticsearch](https://en.wikipedia.org/wiki/Elasticsearch).
 
-
-Objective for this lecture is:
-1. Put the data from the FAQ documents into the search engine to perform a simple search
-2. Get the results and put them into an LLM
-3. Output will be our answer to the question
+Workflow of a RAG Framework (for our example use case):
+1. We start off with an input query and based on relevance (what defines relevance would be discussed as we progress with the lecture), we retrieve documents, say the 5 most relevant documents from the database/knowledge base 
+2. The results from the previous step would be used as input into an LLM model, say OPENAI API for example - prompt + query + context as input to LLM
+3. Output from the LLM will be the response to prompt
 
 ![image](https://github.com/peterchettiar/LLMzoomcamp_2024/assets/89821181/1a84e57d-5ceb-4e19-8b38-71bedf0c001d)
 
-Moving forward, as part of the first step, we need to 
+Moving forward, for our example use case, we need to download a python script written by the course instructor to implement a minimalistic text search engine to our framework. The `minsearch` package is not pip installable and hence need to run the following code on your jupyter notebook cell in order to download the python script to your local directory (directory where your jupyter notebook was created) and use it as a package:
+```
+!wget https://raw.githubusercontent.com/alexeygrigorev/minsearch/main/minsearch.py
+```
 
 ### Preparing the Documents
 
+This section basically describes the steps you need to take to prepare the ingredients needed to kickstart the example use case:
+1. `FAQ documents` - this is the combination of all the FAQ documents across all the various courses run by DataTalks.club, again this FAQ documents is our knowledge base in which we will be querying from (those interested in knowing how the course instructor parsed the data from google docs into a `JSON` format please look at this notebook : [parse-faq.ipynb](https://github.com/DataTalksClub/llm-zoomcamp/blob/main/01-intro/parse-faq.ipynb))
+2. Next we want to download our parsed JSON file the same way we did the `minsearch.py` file - `!wget https://raw.githubusercontent.com/DataTalksClub/llm-zoomcamp/main/01-intro/documents.json`
+3. Now we should be able to `imnport minsearch` as well as load the `JSON` file using the `JSON` library - `import json`
+4. Load the `JSON` file using the following code:
+```python
+with open('documents.json', 'rt') as f_in:
+    docs_raw = json.load(f_in)
+```
+5. Lastly, we want to convert the `JSON` object into a list like the following:
+```python
+documents = [] 
+
+for course_dict in docs_raw:
+    for doc in course_dict['documents']:
+        doc['course'] = course_dict['course']
+        documents.append(doc)
+```
+
 ### Indexing Documents with mini-Search Library
 
+Create an instance of the `Index` class, specifying the text and keyword fields.
+```python
+index = minsearch.Index(
+    text_fields=['question','text','section']
+    keyword_fields=['course']
+)
+```
+
+The `keyword_field` is a filter argument. As a `SQL` query it might look like the following:
+```sql
+SELECT
+  *
+FROM documents
+WHERE course = 'data-engineering-zoomcamp'
+```
+The `text_field` is 
+
 ### Retrieving Documents for a Query
+
