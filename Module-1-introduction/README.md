@@ -152,5 +152,7 @@ results = index.search(
 You would notice that there are additional arguments in our `search` method. 
 
 `filter_dict`: Dictionary of keyword fields to filter by. Keys are field names and values are the values to filter by.
+
 `boost_dict`: Dictionary of boost scores for text fields. Keys are field names and values are the boost scores.given the `question` field 3 times the importance.
+
 `num_results`: The number of top results to return. Defaults to 10.
