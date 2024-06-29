@@ -120,7 +120,37 @@ SELECT
 FROM documents
 WHERE course = 'data-engineering-zoomcamp'
 ```
-The `text_field` is 
+The `text_field` is the field in which the search is performed.
 
 ### Retrieving Documents for a Query
 
+Next, we want to retreive the documents from our knowledge base for a given query. Say our query is as follows:
+```python
+q = 'the course has already started, can I still enroll?'
+```
+Since we already initialised the `index` object, we can now fit it with the provided documents.
+```python
+# simply fitting the index with the provided document
+
+index.fit(documents)
+```
+
+Then all we have to do now is search through the documents to return the top 5 documents that are relevant to our query.
+```python
+# now to perform the search on the index with the given query, filters and boost parameters
+
+boost = {'question': 3.0}  # adding 3 times more importance to 'question field'
+
+results = index.search(
+    query = q,
+    filter_dict= {'course': 'data-engineering-zoomcamp'},
+    boost_dict= boost,
+    num_results= 5  # number of outputs - i.e. docs retreived
+)
+```
+
+You would notice that there are additional arguments in our `search` method. 
+
+`filter_dict`: Dictionary of keyword fields to filter by. Keys are field names and values are the values to filter by.
+`boost_dict`: Dictionary of boost scores for text fields. Keys are field names and values are the boost scores.given the `question` field 3 times the importance.
+`num_results`: The number of top results to return. Defaults to 10.
