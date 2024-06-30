@@ -59,7 +59,7 @@ The RAG architecture typically consists of two main components:
 1. **Retriever**: This component retrieves relevant documents or information based on the input query.
 2. **Generator**: This component generates a response using the retrieved documents as context.
 
-![alt text](image-2.png)
+![image](https://github.com/peterchettiar/LLMzoomcamp_2024/assets/89821181/1479fd6a-ff51-4f9a-aba4-96a6e1563a53)
 
 ### Course Outcome
 
