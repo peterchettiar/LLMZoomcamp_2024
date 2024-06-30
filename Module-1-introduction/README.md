@@ -26,7 +26,6 @@
   - [Building the Prompt](#building-the-prompt)
   - [LLM](#llm-1)
   - [The RAG Flow](#the-rag-flow)
-  - [Debugging](#debugging)
   - [The RAG Flow Function](#the-rag-flow-function)
 
 ## 1.1 Introduction to LLM and RAG
@@ -366,14 +365,108 @@ Notice the main difference that its not so random and generic, your responses ar
 
 ### Introduction
 
+The objective of the subsquent sections is to clean the code that we have written so far by making it more modular as well as replacing the components used (e.g. our `minsearch` package) as we progress further into the course.
+
+To summarise the RAG framework:
+
+send a query to our search engine (this is the `index` object we initialised based on the `minsearch` library) --> search engine returns most relevant documents from the knowledge base --> build a prompt with the query and results from the search engine as context --> send prompt to LLM --> Get Answer.
+
+These are the steps we have done so far based on the previous lecture videos. The code written so far was written cell by cell to enable clear understanding of the steps involved. Hence, the need for modularisation.
+
 ### Search
+
+Assuming you had already initialised your `index` object, same as we did before, we can just proceed with writing a function to perform search. Keep in mind that the following function is by no means a dynamic one. There are a lot of 'Hard' coding done here. In the best case scenario, function should parameterized as far as possible.
+
+```python
+def search(query):
+
+    boost = {'question': 3.0}  # adding 3 times more importance to 'question field'
+
+    results = index.search(
+        query = query,
+        filter_dict= {'course': 'data-engineering-zoomcamp'},
+        boost_dict= boost,
+        num_results= 5  # number of outputs - i.e. docs retreived
+    )
+
+    return results
+```
+ we can test our function - `search('how do I run Kafka?')`
 
 ### Building the Prompt
 
+Modularizing what we had done previously into a function:
+```python
+# funtion to build the prompt
+
+def build_prompt(query, search_results):
+
+    prompt_template = """
+    You're a course teaching assistant. Answer the QUESTION based on the CONTEXT from the FAQ database. 
+    Use only the facts from the CONTEXT when answering the QUESTION.
+    If the CONTEXT doesn't contain the answer, output NONE
+
+    QUESTION: {question}
+
+    CONTEXT: 
+    {context}
+    """.strip() # so that there are no extra line breaks
+
+    context = ""
+
+    for doc in search_results:
+        context += f"section: {doc['section']}\nquestion: {doc['question']}\nanswer: {doc['text']}\n\n"
+
+    prompt = prompt_template.format(question=query, context=context)
+
+    return prompt
+```
+
+This should return you the prompt in which is used as input into the LLM.
+
 ### LLM
+
+Similary, let's write a function for the LLM.
+
+```python
+# now function for the LLM
+
+def llm(prompt):
+
+    response = client.chat.completions.create(
+        model='gpt-4o',
+        messages=[{'role':'user',
+                   'content': prompt}]
+    )
+
+    return response.choices[0].message.content
+```
 
 ### The RAG Flow
 
-### Debugging
+So now that we have all our functions to generate the answer for our query, the RAG flow should look something like the following:
+```python
+# so now bringing them all together - the RAG flow
+query = 'The course already started. Can I still enroll?''
+res = search(query=query)
+prompt = build_prompt(query=query, search_results=res)
+answer = llm(prompt=prompt)
+```
 
 ### The RAG Flow Function
+
+Here we are simply going to convert our `RAG Flow` into a function.
+
+```python
+# we can put them into a RAG flow function
+
+def rag(query):
+
+    search_results = search(query=query)
+    prompt = build_prompt(query=query, search_results=res)
+    answer = llm(prompt=prompt)
+
+    return answer
+```
+
+This makes the iteration process as well as the understanding of the `RAG Workflow` a lot simpler. If we need to change the search engine from `minsearch` to `elasticsearch`, then we just need to amend this function (change `search` in `search_results`). Similarly, if we want to change our model instead, we just need to amend `llm`.
