@@ -15,6 +15,11 @@
   - [Preparing the Documents](#preparing-the-documents)
   - [Indexing Documents with mini-Search Library](#indexing-documents-with-mini-search-library)
   - [Retrieving Documents for a Query](#retrieving-documents-for-a-query)
+- [1.4 Generattion with OpenAI](#14-generation-with-openai)
+  - [Introduction](#introduction)
+  - [Response Analysis](#respones-analysis)
+  - [Building a Prompt Template and Context](#building-a-prommpt-template-and-context)
+  - [Getting the Answer](#getting-the-answer)
 
 ## 1.1 Introduction to LLM and RAG
 
@@ -156,3 +161,159 @@ You would notice that there are additional arguments in our `search` method.
 `boost_dict`: Dictionary of boost scores for text fields. Keys are field names and values are the boost scores.given the `question` field 3 times the importance.
 
 `num_results`: The number of top results to return. Defaults to 10.
+
+## 1.4 Generation with OpenAI
+
+### Introduction
+
+So what we've done so far is index our documents with a search engine, and how to perform a search with a user query.
+
+And the responses we got were documents retrieved from our knowledge base. So what we're suppose to do now is to put these relevant documents, that may or may not contain the answer for our query, into a LLM as a context to the question that the user had asked.
+
+We will now need to form a prompt and send it to `OpenAI GPT4-o` or your preferred LLM, with our mini toy-search engine as our database.
+
+But before we proceed, I wanted to quickly share on the importance of `indexing`. Please note that I had generated the following response from `claude.ai`
+
+In the context of Large Language Models (LLMs), indexing documents refers to the process of organizing and structuring a large collection of text data in a way that allows for efficient retrieval and utilization by the model. This is particularly important for enhancing an LLM's ability to access and use specific information quickly. Here's a breakdown of what this involves:
+
+1. Document preprocessing:
+
+  - Cleaning and formatting text
+  - Removing irrelevant information
+  - Tokenization (breaking text into words or subwords)
+
+2. Creating searchable structures:
+
+  - Building inverted indexes (mapping words to document locations)
+  - Generating embeddings (vector representations of text)
+
+3. Metadata tagging:
+
+  - Adding descriptive information to documents
+  - Categorizing content
+
+4. Efficient storage:
+
+- Organizing data for quick access
+- Compressing information where possible
+
+5. Retrieval mechanisms:
+
+- Implementing search algorithms
+- Enabling semantic search capabilities
+
+6. Integration with LLM:
+
+- Designing interfaces between indexed documents and the model
+- Implementing retrieval-augmented generation techniques
+
+The goal is to enable the LLM to quickly find and incorporate relevant information from a large corpus when generating responses, improving accuracy and reducing hallucinations.
+This process is crucial for applications like question-answering systems, chatbots with access to specific knowledge bases, and other AI systems that need to combine general language understanding with specific, retrievable information.
+
+### Respones Analysis
+
+For this section, we are just going to make a comparison of the responses that we get from `OPENAI` with and without any context provided.
+
+So if we want to generate responses just based on our question (`The course has already started, can I still enroll?`), we run the following code:
+
+```python
+# response from OpenAI without providing context
+
+response = client.chat.completions.create(
+    model='gpt-4o',
+    messages=[{"role":"user", "content":q}]
+)
+```
+
+The responses can be printed out using `pprint(response.choices[0].message.content)` and it should look like the following:
+
+```txt
+('Whether you can still enroll in a course that has already started typically '
+ 'depends on the policies of the institution or organization offering the '
+ 'course. Here are a few steps you can take to find out:\n'
+ '\n'
+ '1. **Check the Course Description or Website:** Look for any information '
+ 'regarding late enrollment.\n'
+ '  \n'
+ '2. **Contact the Instructor or Course Coordinator:** They may allow late '
+ 'enrollment under certain circumstances or provide details on how to catch '
+ 'up.\n'
+ '\n'
+ '3. **Reach Out to the Admissions Office:** They can provide information '
+ "about the institution's policies on late enrollment and may help facilitate "
+ 'your enrollment.\n'
+ '\n'
+ '4. **Consider the Impact:** Evaluate how much content you have missed and '
+ 'whether you can realistically catch up.\n'
+ '\n'
+ '5. **Consult Academic Advisors:** They can offer guidance and might help '
+ 'with exceptions to policies.\n'
+ '\n'
+ 'If the course allows for asynchronous learning (where you can access '
+ 'materials and complete work at your own pace), catching up might be easier. '
+ 'However, for courses with significant interactive or time-bound components '
+ '(like group projects or frequent assessments), enrolling late could be more '
+ 'challenging.')
+```
+
+You would immediately realise that it is rather generic and random. So in order to get a response that is more in line with our knowledge base, we need to build a prompt that provides the relevant documents from our knowledge base as context. This is exactly what we would be doing in the next sections. 
+
+### Building a Prommpt Template and Context
+
+Feel free to play around and define your own prompt template, but a good starting point is as follows:
+
+```python
+# building a prompt template
+
+prompt_template = """
+You're a course teaching assistant. Answer the QUESTION based on the CONTEXT from the FAQ database. 
+Use only the facts from the CONTEXT when answering the QUESTION.
+If the CONTEXT doesn't contain the answer, output NONE
+
+QUESTION: {question}
+
+CONTEXT: 
+{context}
+""".strip() # so that there are no extra line breaks
+```
+
+Next, we can build the context based on the `results` variable from before - top 5 most relevant documents retrieved from our knowledge base based on weighted cosine similarity with our query.
+
+```python
+# building the context
+
+context = ""
+
+for doc in results:
+    context += f"section: {doc['section']}\nquestion: {doc['question']}\nanswer: {doc['text']}\n\n"
+```
+
+### Getting the Answer
+
+Now that we have our `prompt_template` as well as our `context`, we can proceed to define and viewn the `prompt`.
+
+```python
+prompt = prompt_template.format(question=q, context=context).strip()
+
+print(prompt)
+```
+
+This `prompt` would be provided as context into our `LLM`. Let's now generate the responses with context and analyse the stark difference when using the `RAG` framework.
+
+```python
+# getting the answers - responsese with context
+
+response_with_context = client.chat.completions.create(
+    model='gpt-4o',
+    messages=[{"role":"user", "content":prompt}]
+)
+
+response_with_context.choices[0].message.content
+```
+
+The response you get will look like the following:
+```text
+Yes, even if you don't register, you're still eligible to submit the homeworks. Be aware, however, that there will be deadlines for turning in the final projects. So don't leave everything for the last minute.
+```
+
+Notice the main difference that its not so random and generic, your responses are very much in-line with the knowledge base. This is the power of `RAG`!
