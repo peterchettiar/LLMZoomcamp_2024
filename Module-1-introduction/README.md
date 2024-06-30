@@ -20,6 +20,14 @@
   - [Response Analysis](#respones-analysis)
   - [Building a Prompt Template and Context](#building-a-prommpt-template-and-context)
   - [Getting the Answer](#getting-the-answer)
+- [1.5 Cleaned RAG Flow](#15-cleaned-rag-flow)
+  - [Introduction](#introduction-1)
+  - [Search](#search)
+  - [Building the Prompt](#building-the-prompt)
+  - [LLM](#llm-1)
+  - [The RAG Flow](#the-rag-flow)
+  - [Debugging](#debugging)
+  - [The RAG Flow Function](#the-rag-flow-function)
 
 ## 1.1 Introduction to LLM and RAG
 
