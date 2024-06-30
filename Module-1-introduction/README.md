@@ -361,3 +361,19 @@ Yes, even if you don't register, you're still eligible to submit the homeworks. 
 ```
 
 Notice the main difference that its not so random and generic, your responses are very much in-line with the knowledge base. This is the power of `RAG`!
+
+## 1.5 Cleaned RAG Flow
+
+### Introduction
+
+### Search
+
+### Building the Prompt
+
+### LLM
+
+### The RAG Flow
+
+### Debugging
+
+### The RAG Flow Function
