@@ -55,7 +55,20 @@ Following is a good visual representation of the implementation and orchestratio
 
 ### RAG Architecture
 
+The RAG architecture typically consists of two main components:
+1. **Retriever**: This component retrieves relevant documents or information based on the input query.
+2. **Generator**: This component generates a response using the retrieved documents as context.
+
+![alt text](image-2.png)
+
 ### Course Outcome
+
+By the end of this course, you will:
+- Understand the basics of LLM and RAG.
+- Be able to implement a simple RAG pipeline.
+- Gain hands-on experience with indexing and searching documents.
+- Learn to integrate OpenAI for answer generation.
+- Understand how to use Elasticsearch for improved search capabilities.
 
 ## 1.2 Preparing the Environment
 
