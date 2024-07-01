@@ -27,6 +27,12 @@
   - [LLM](#llm-1)
   - [The RAG Flow](#the-rag-flow)
   - [The RAG Flow Function](#the-rag-flow-function)
+- [1.6 Searching with ElasticSearch](#16-searching-with-elasticsearch)
+  - [Introduction](#introduction-2)
+  - [Running ElasticSearch](#running-elasticsearch)
+  - [Indexing Data](#indexing-data)
+  - [Querying Data](#querying-data)
+  - [Updating the RAG Flow](#updating-the-rag-flow)
 
 ## 1.1 Introduction to LLM and RAG
 
@@ -470,3 +476,29 @@ def rag(query):
 ```
 
 This makes the iteration process as well as the understanding of the `RAG Workflow` a lot simpler. If we need to change the search engine from `minsearch` to `elasticsearch`, then we just need to amend this function (change `search` in `search_results`). Similarly, if we want to change our model instead, we just need to amend `llm`.
+
+## 1.6 Searching with ElasticSearch
+
+### Introduction
+
+In this section, we are going to replace the toy-search engine we used previously from the `minsearch` package with `elasticsearch`. You might be wondering as to why we even used this `toy-search` engine in the first place. That is because later in the course we might be using tools such as `saturn-cloud` where it is not really easy to run `elasticsearch`. Hence, having something that runs in memory and gives good results is essential, and using the `toy-search` engine can be useful down the line that can be used in practice.
+
+### Running ElasticSearch
+
+Essentially, we are trying to replace our `search` function in our `rag_flow` function that we defined previously, with `elasticsearch`. But before we do that, we need to run the following command in terminal to run the containerized version of `elasticsearch`:
+```bash
+docker run -it \
+    --rm \
+    --name elasticsearch \
+    -p 9200:9200 \
+    -p 9300:9300 \
+    -e "discovery.type=single-node" \
+    -e "xpack.security.enabled=false" \
+    docker.elastic.co/elasticsearch/elasticsearch:8.4.3
+```
+
+### Indexing Data
+
+### Querying Data
+
+### Updating the RAG Flow
