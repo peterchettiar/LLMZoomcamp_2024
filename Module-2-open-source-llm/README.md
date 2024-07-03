@@ -110,11 +110,11 @@ In this section we are going to learn more about `SaturnCloud` and how to set up
 
 Go to [SaturnCloud's](https://saturncloud.io/) website and click on `Get a Techinical Demo`
 
-![alt text](image-1.png)
+![image](https://github.com/peterchettiar/LLMzoomcamp_2024/assets/89821181/48979241-0e86-442b-b9fe-fb7efb4f94d2)
 
 Next, in the landing page, input the details as follows - use your own personal email of course.
 
-![alt text](image-2.png)
+![image](https://github.com/peterchettiar/LLMzoomcamp_2024/assets/89821181/22a47b6e-e318-49a8-a52a-4af4f1086e1f)
 
 ### Configuring Secrets and Git
 
