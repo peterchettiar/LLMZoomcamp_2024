@@ -98,7 +98,8 @@ These are to name a few and we should be having a feel of few of them in subsequ
 ### Replacing the LLM box in the RAG flow
 
 So what we are going to do is to replace the LLM "BOX" as seen below with some other open-sourced LLM. This would be the focus of this module.
-![alt text](image.png)
+
+![image](https://github.com/peterchettiar/LLMzoomcamp_2024/assets/89821181/abe89b5e-d322-44a5-a9ed-b22650d76cb2)
 
 In particular, we will see how to set up an environment and use different LLMs, as well as accessing these models using `HuggingFace`.
 
