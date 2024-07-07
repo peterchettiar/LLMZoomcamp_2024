@@ -158,3 +158,36 @@ Now that the `git` access is set up, we can now `Create a Jupyter Server`. To do
 5. That is pretty much it - we can now just click `create` at the bottom of the page.
 6. This should lead you to the following page - if you need to add your `enironement variables` you can do so in the `Secrets and Roles` page as highlighted.
 ![image](https://github.com/peterchettiar/LLMzoomcamp_2024/assets/89821181/7b53a264-38fa-42fc-9d92-3e6acf412686)
+
+## 2.3 FLAN-T5
+
+In this section we will be running our first open-source LLM `FLAN-T5` which is an advanced language model developed by Google AI. The model is available in `HuggingFace` library, and hence will be using `HuggingFace` platform extensively throughout this course.
+
+### Hugging Face
+
+At this point it would be good to describe a little bit more about Hugging Face and its importance in the AI community. Hugging Face is a game-changer in machine learning and natural language processing and a key agent in the democratization of AI. Thanks to transfer learning, it is playing a crucial role in making AI more accessible.
+
+Simply put its the `Github` of the ML world - a collaborative platform brimming with tools that empower anyone to create, train, and deploy NLP and ML models using open-source code. And its main component is the `transforemers` library, which is why we had `pip install transformers` when setting up our Jupyter Server in Saturn Cloud. In a nutshell, the `transformers` library in Hugging Face allows easy access to all the open-source LLM models that we would want to use for this course and more. Not only that, it provides tools such as `pipeline` API as well as `tokenizers` to simplfy the process of fine-tuning pretrained models as well as making them more efficient for things like text processing.
+
+For a more detailed introduction to `HuggingFace` and the `transformers` library, I would recommend to read this [article](https://www.datacamp.com/tutorial/what-is-hugging-face).
+
+### Google FlAN T5 XL
+
+The Google `FLAN-T5-XL` is a larger variant of the `FLAN-T5` model family. The model as well as their description and usage, amongst others, are available [here](https://huggingface.co/google/flan-t5-xl). And as mentioned eariler, its available on the `Hugging Face Model Hub`. 
+
+The `FLAN-T5-XL` is a versatile model for a range of natural language processing tasks which includes Text Summarisation, Language Translation and Text Generation to name a few. Let's take the example usage from the model page shared earlier or as follows:
+```python
+# pip install accelerate
+from transformers import T5Tokenizer, T5ForConditionalGeneration
+
+tokenizer = T5Tokenizer.from_pretrained("google/flan-t5-xl")
+model = T5ForConditionalGeneration.from_pretrained("google/flan-t5-xl", device_map="auto")
+
+input_text = "translate English to German: How old are you?"
+input_ids = tokenizer(input_text, return_tensors="pt").input_ids.to("cuda")
+
+outputs = model.generate(input_ids)
+print(tokenizer.decode(outputs[0]))
+```
+
+> Note: the code snippet above is for running a model on a GPU - running on CPU takes a lot longer
