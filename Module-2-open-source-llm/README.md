@@ -10,6 +10,7 @@
     - [Configuring Secrets and Git](#configuring-secrets-and-git)
     - [Creating an instance with GPU](#creating-an-instance-with-gpu)
 
+
 ## 2.1 Open-Source LLMs - Introduction
 
 In this week's lecture, we will be exploring alternatives to `OPENAI`, and in particular, we will be discussing more on **Open-Sourced LLMs** and how to run them. There are several ways to run open-source LLM models, depending on your technical expertise and available resources. Here are some options:
@@ -191,3 +192,48 @@ print(tokenizer.decode(outputs[0]))
 ```
 
 > Note: the code snippet above is for running a model on a GPU - running on CPU takes a lot longer
+
+You might run into an issue when you run the code snippet - `OSError: [Errno 28] No space left on device`. This is a result of not having enough space to download the model (in our case the model size is about 9.45GB) in the default directory stored as a variable called `HF_HOME`. Not to worry, the file path for this environment variable direct the downloads to a `.cache` folder in your home directory. Run `df -h` to see the available memory in the different file systems, so as to change the file path of `HF_HOME` to one that has more capacity. A way to do so is to run the following in a cell in your notebook:
+
+```python
+import os
+
+os.environ['HF_HOME'] = '/run/cache'
+```
+Now you should be able to run the model code snippet without any errors. Now let's quickly dissect the code snippet. The main part really is the `tokenizer` - breaking down text into words, subwords, or characters into tokens and converting them into numerical IDs. This enables machine learning models to understand the inputs texts. Hence why your `input_ids` is a tensor array of token IDs.
+
+![image](https://github.com/peterchettiar/LLMzoomcamp_2024/assets/89821181/1c3e2fbe-dcb6-41ca-b9eb-de926892ab35)
+
+### Rewriting the LLM Function
+
+Keep in mind that we still use our `minsearch` package for searching through our database - in our case its the `FAQs` JSON file we had downloaded in the previous section.
+
+There were three main functions encapsulated in the `rag` function that we had written before.
+```python
+def rag(query):
+    search_results = search(query)
+    prompt = build_prompt(query, search_results)
+    answer = llm(prompt)
+    return answer
+```
+
+But the only one that we are modifying is the `llm` function as we are changing the model from `GPT4` to `FLAN-T5-XL`.
+```python
+def llm(prompt, generate_params=None):
+    if generate_params is None:
+        generate_params = {}
+
+    input_ids = tokenizer(prompt, return_tensors="pt").input_ids.to("cuda")
+    outputs = model.generate(
+        input_ids,
+        max_length=generate_params.get("max_length", 100),
+        num_beams=generate_params.get("num_beams", 5),
+        do_sample=generate_params.get("do_sample", False),
+        temperature=generate_params.get("temperature", 1.0),
+        top_k=generate_params.get("top_k", 50),
+        top_p=generate_params.get("top_p", 0.95),
+    )
+    result = tokenizer.decode(outputs[0], skip_special_tokens=True)
+    return result
+```
+> Note: the snippet contains more parameters as we want to make the output longer.
