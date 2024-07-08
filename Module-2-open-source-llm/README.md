@@ -9,7 +9,10 @@
     - [Registering in Saturn Cloud](#registering-in-saturn-cloud)
     - [Configuring Secrets and Git](#configuring-secrets-and-git)
     - [Creating an instance with GPU](#creating-an-instance-with-gpu)
-
+- [2.3 FLAN-T5-XL](#23-flan-t5)
+    - [Hugging Face](#hugging-face)
+    - [Google FlAN T5 XL](#google-flan-t5-xl)
+    - [Rewriting the LLM Function](#rewriting-the-llm-function)
 
 ## 2.1 Open-Source LLMs - Introduction
 
