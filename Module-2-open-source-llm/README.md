@@ -134,14 +134,16 @@ To add a token is rather straightfoward, you just need to click on `New` on the 
 For setting up `git` access, you need to configure `USER SETTINGS` in Saturn Cloud as well as creating a secure connection by adding your `SSH public key` into your `Github` account.
 
 1. Go to `USER SETTINGS`
+
 ![image](https://github.com/peterchettiar/LLMzoomcamp_2024/assets/89821181/a74d1278-83a1-4b34-88de-1981f21fe402)
-2. Under the section `Git SSH Key`, click on `Create an SSH Key`
-3. In the landing page, it should look like the following. You want to generate a public/private key pair within `SaturnCloud`, so click `Add`.
+
+3. Under the section `Git SSH Key`, click on `Create an SSH Key`
+4. In the landing page, it should look like the following. You want to generate a public/private key pair within `SaturnCloud`, so click `Add`.
 ![image](https://github.com/peterchettiar/LLMzoomcamp_2024/assets/89821181/65408683-85ce-43ed-ac50-6f88a5df1ae2)
-4. Now that you have generated your `SSH - public key`, you can add it to your git Host to create the secure connection. To do so you have to navigate to the `settings` page on your `Github` account, and then on the left panel select `SSH Key and GPG keys` as follows:
+5. Now that you have generated your `SSH - public key`, you can add it to your git Host to create the secure connection. To do so you have to navigate to the `settings` page on your `Github` account, and then on the left panel select `SSH Key and GPG keys` as follows:
 ![image](https://github.com/peterchettiar/LLMzoomcamp_2024/assets/89821181/f991c984-4a7b-4876-9d14-7029d62304e3)
-5. Next you have to click on `New SSH Key` - this should take you to `Add new SSH Key`, add the title as well as the `SSH - public key` you created in Saturn Cloud. You should have now created a secure connection
-6. Once you’ve set up your SSH keys, you can add git repositories to your resources. From the left-hand menu, select the Git Repositories tab.
+6. Next you have to click on `New SSH Key` - this should take you to `Add new SSH Key`, add the title as well as the `SSH - public key` you created in Saturn Cloud. You should have now created a secure connection
+7. Once you’ve set up your SSH keys, you can add git repositories to your resources. From the left-hand menu, select the Git Repositories tab.
 ![image](https://github.com/peterchettiar/LLMzoomcamp_2024/assets/89821181/8c6f1212-0f41-478b-bf36-19625a5aec81)
 8. From the git repositories page, select the `New` button at the top right corner. Here, you can add a repository via remote URL (this is the link you’d use when running `git clone` in the terminal).
 ![image](https://github.com/peterchettiar/LLMzoomcamp_2024/assets/89821181/735704c6-9377-46fe-8356-b90aeea31d67)
