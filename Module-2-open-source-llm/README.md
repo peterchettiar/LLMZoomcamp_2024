@@ -146,7 +146,9 @@ For setting up `git` access, you need to configure `USER SETTINGS` in Saturn Clo
 7. Once you’ve set up your SSH keys, you can add git repositories to your resources. From the left-hand menu, select the Git Repositories tab.
 ![image](https://github.com/peterchettiar/LLMzoomcamp_2024/assets/89821181/8c6f1212-0f41-478b-bf36-19625a5aec81)
 8. From the git repositories page, select the `New` button at the top right corner. Here, you can add a repository via remote URL (this is the link you’d use when running `git clone` in the terminal).
+
 ![image](https://github.com/peterchettiar/LLMzoomcamp_2024/assets/89821181/735704c6-9377-46fe-8356-b90aeea31d67)
+
 9. If you still feel a little lost, please read this [documentation](https://saturncloud.io/docs/using-saturn-cloud/gitrepo/#:~:text=Click%20on%20Create%20an%20SSH,the%20SSH%20key%20creation%20form.&text=After%20you%20have%20a%20key,to%20create%20the%20secure%20connection.)
 
 ### Creating an instance with GPU
