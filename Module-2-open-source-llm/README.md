@@ -13,6 +13,11 @@
     - [Hugging Face](#hugging-face)
     - [Google FlAN T5 XL](#google-flan-t5-xl)
     - [Rewriting the LLM Function](#rewriting-the-llm-function)
+- [2.4 Phi 3 Mini](#24-phi-3-mini)
+    - [Introduction to Microsoft's Phi3](#introduction-to-microsofts-phi3)
+    - [Nvidia-SIM, Model Size and using Phi3](#nvidia-ami-model-size-and-using-phi3)
+    - [Interface Comparison](#interface-comparison)
+    - [Using Phi3 for RAG](#using-phi3-for-rag)
 
 ## 2.1 Open-Source LLMs - Introduction
 
@@ -251,3 +256,25 @@ def llm(prompt, generate_params=None):
     return result
 ```
 > Note: the snippet contains more parameters as we want to make the output longer.
+
+Explanation of Parameters:
+
+- `max_length`: Set this to a higher value if you want longer responses. For example, max_length=300.
+- `num_beams`: Increasing this can lead to more thorough exploration of possible sequences. Typical values are between 5 and 10.
+- `do_sample`: Set this to True to use sampling methods. This can produce more diverse responses.
+- `temperature`: Lowering this value makes the model more confident and deterministic, while higher values increase diversity. Typical values range from 0.7 to 1.5.
+- `top_k` and `top_p`: These parameters control nucleus sampling. `top_k` limits the sampling pool to the top `k` tokens, while `top_p` uses cumulative probability to cut off the sampling pool. Adjust these based on the desired level of randomness.
+
+
+## 2.4 Phi 3 Mini
+
+### Introduction to Microsoft's Phi3
+
+
+###  Nvidia-AMI, Model Size and using Phi3
+
+
+### Interface Comparison
+
+
+### Using Phi3 for RAG
