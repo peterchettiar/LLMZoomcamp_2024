@@ -16,7 +16,6 @@
 - [2.4 Phi 3 Mini](#24-phi-3-mini)
     - [Introduction to Microsoft's Phi3](#introduction-to-microsofts-phi3)
     - [Nvidia-SIM, Model Size and using Phi3](#nvidia-ami-model-size-and-using-phi3)
-    - [Interface Comparison](#interface-comparison)
     - [Using Phi3 for RAG](#using-phi3-for-rag)
 
 ## 2.1 Open-Source LLMs - Introduction
@@ -291,9 +290,27 @@ Run the `nvidia-smi` command on the terminal window in your `saturn cloud` insta
 
 ![image](https://github.com/user-attachments/assets/b5046888-3435-4b95-b43b-4e569bb64226)
 
-
-
-### Interface Comparison
-
+> Note: Interface comparison - this model has more of a chat style prompt rather that a completion style in the previous model
 
 ### Using Phi3 for RAG
+
+More or less the structure is the same as the previous models - the only difference is the `llm function`:
+```python
+def llm(prompt):
+    messages = [
+        {"role": "user", "content": prompt},
+    ]
+
+    generation_args = {
+        "max_new_tokens": 500,
+        "return_full_text": False,
+        "temperature": 0.0,
+        "do_sample": False,
+    }
+
+    output = pipe(messages, **generation_args)
+    
+    return output[0]['generated_text'].strip()
+```
+
+You can find the Notebook: [huggingface-phi3-mini.ipynb](https://github.com/peterchettiar/LLMzoomcamp_2024/blob/main/Module-2-open-source-llm/huggingface-phi3-mini.ipynb) for more details.
