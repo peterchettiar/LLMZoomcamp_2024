@@ -289,6 +289,8 @@ Run the `nvidia-sim` command on the terminal window in your `saturn cloud` insta
 - Power Consumption
 - Running processes on each GPU
 
+![image](https://github.com/user-attachments/assets/d38bf8f1-5aeb-4d35-84a4-6f4501deef0a)
+
 
 
 ### Interface Comparison
