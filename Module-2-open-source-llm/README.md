@@ -282,14 +282,14 @@ The model is intended for commercial and research use in English. The model prov
 
 ###  Nvidia-AMI, Model Size and using Phi3
 
-Run the `nvidia-sim` command on the terminal window in your `saturn cloud` instance to gather information on the following:
+Run the `nvidia-smi` command on the terminal window in your `saturn cloud` instance to gather information on the following:
 - GPU Utilisation
 - Memory Usage
 - Temperature
 - Power Consumption
 - Running processes on each GPU
 
-![image](https://github.com/user-attachments/assets/d38bf8f1-5aeb-4d35-84a4-6f4501deef0a)
+![image](https://github.com/user-attachments/assets/b5046888-3435-4b95-b43b-4e569bb64226)
 
 
 
