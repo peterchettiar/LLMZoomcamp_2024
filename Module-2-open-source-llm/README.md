@@ -270,8 +270,25 @@ Explanation of Parameters:
 
 ### Introduction to Microsoft's Phi3
 
+The `PHI-3` (Phenomenal Holistic Intelligence 3) mini is a smalller version of the of the original `PHI-3` model also developed by Microsoft.
+
+These models are built to be light and effective as compared to other open-sourced models in the market, and hence are dubbed as `Small Language Models` - a.k.a. `SML`.
+
+The model is intended for commercial and research use in English. The model provides uses for applications which require:
+
+1. Memory/compute constrained environments
+2. Latency bound scenarios
+3. Strong reasoning (especially code, math and logic)
 
 ###  Nvidia-AMI, Model Size and using Phi3
+
+Run the `nvidia-sim` command on the terminal window in your `saturn cloud` instance to gather information on the following:
+- GPU Utilisation
+- Memory Usage
+- Temperature
+- Power Consumption
+- Running processes on each GPU
+
 
 
 ### Interface Comparison
