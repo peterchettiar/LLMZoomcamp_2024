@@ -17,6 +17,7 @@
     - [Introduction to Microsoft's Phi3](#introduction-to-microsofts-phi3)
     - [Nvidia-SIM, Model Size and using Phi3](#nvidia-ami-model-size-and-using-phi3)
     - [Using Phi3 for RAG](#using-phi3-for-rag)
+ - [2.5 Mistral-7B](#25mistral-7b)
 
 ## 2.1 Open-Source LLMs - Introduction
 
@@ -355,3 +356,31 @@ model = AutoModelForCausalLM.from_pretrained(
 
 tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-v0.1", padding_side="left")
 ```
+### Saving, Loading the model and the LLM function
+
+The model is quite large, and so it is not advised to download the model for each run. We can download it once, and then subsequently save followed by loading it from a local directory. To do so, we can do the following for saving the `model` as well as `tokenizer`:
+
+```python
+# now let's save the model locally, so that we don't need to keep downloading them
+
+model.save_pretrained("./mistral-7b-model")
+tokenizer.save_pretrained("./mistral-7b-tokenizer")
+```
+For loading the model.
+
+```python
+# loading the model from local directory
+
+model = AutoModelForCausalLM.from_pretrained("./mistral-7b-model")
+tokenizer = AutoTokenizer.from_pretrained("./mistral-7b-tokenizer")
+```
+
+Last but not least, please find the following `llm` function for this model, and feel free to tweak the arguments to give it a more desired result.
+
+```python
+def llm(prompt):
+    response = pipe(prompt, max_length=500, temperature=0.7, top_p=0.95, num_return_sequences=1)
+    response_final = response[0]['generated_text']
+    return response_final[len(prompt):].strip()
+```
+
