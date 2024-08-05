@@ -18,6 +18,9 @@
     - [Nvidia-SIM, Model Size and using Phi3](#nvidia-ami-model-size-and-using-phi3)
     - [Using Phi3 for RAG](#using-phi3-for-rag)
  - [2.5 Mistral-7B](#25-mistral-7b)
+    - [Introduction to Mistral-7B](#introduction-to-mistral-7b)
+    - [Using Mistral-7B](#using-mistral-7b)
+    - [Saving, Loading the model and the LLM function](#saving-loading-the-model-and-the-llm-function)
 
 ## 2.1 Open-Source LLMs - Introduction
 
