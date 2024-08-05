@@ -17,7 +17,7 @@
     - [Introduction to Microsoft's Phi3](#introduction-to-microsofts-phi3)
     - [Nvidia-SIM, Model Size and using Phi3](#nvidia-ami-model-size-and-using-phi3)
     - [Using Phi3 for RAG](#using-phi3-for-rag)
- - [2.5 Mistral-7B](#25mistral-7b)
+ - [2.5 Mistral-7B](#25-mistral-7b)
 
 ## 2.1 Open-Source LLMs - Introduction
 
