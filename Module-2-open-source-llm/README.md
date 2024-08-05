@@ -314,3 +314,44 @@ def llm(prompt):
 ```
 
 You can find the Notebook: [huggingface-phi3-mini.ipynb](https://github.com/peterchettiar/LLMzoomcamp_2024/blob/main/Module-2-open-source-llm/huggingface-phi3-mini.ipynb) for more details.
+
+## 2.5 Mistral-7B
+
+### Introduction to Mistral-7B
+
+`mistral-7b` is an open-sourced LLM that was developed by [Mistral AI](https://mistral.ai/). With 7 billion parameters, which is relatively small compared to other prominent LLMs, it demonstrates impressive performance as compared to other models like the `Llama 2 13B`. Perhaps the reason why it has gained significant attention in the AI community.
+
+### Using Mistral-7B
+
+Unlike the previous 2 models, `mistral-7b` is not so easily accessed. The is because `mistral-7b` is released under specific licence that requires users to agree to certain terms and conditions. So there couple of things we need to do:
+
+1. Create an account on `huggingface` - do so if you have not done so already
+2. Click on your profile icon at the top right-hand of page and select settings from the drop-down
+3. On the left navigation panel, select `Access Tokens`
+4. Click `create new token` on the top right-hand of page
+5. You should see the following page - give a name for your token, I used `llm-course`, and click on `create token`
+   ![image](https://github.com/user-attachments/assets/6f49ffd0-cb26-46fc-a86d-ed3954c457de)
+6. Next, on your saturn cloud we need to create a new secret - same as an environment variable
+7. As the below image shows, click on `Secrets` and then click on `New` to be able to add the name as well as the value of the token - the token being the one just created on `huggingface`
+   ![image](https://github.com/user-attachments/assets/7ca9b0d7-143c-4ff7-b1b2-e39e6584aa48)
+8. Once added, you should be able to see this on the `Secrets and Roles` section of your Jupyter Server as follows
+   ![image](https://github.com/user-attachments/assets/0e8efcdf-33c7-4455-acf7-54d37a1e5737)
+
+Now that we have saved `HF_TOKEN` in secrets, we can now call our model from `huggingface`. But before we do so, we need to login to perform the Hub Authentication. Follow the code snippet, this is pretty much the only difference as compared to the previously run notebooks.
+
+```python
+from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
+from huggingface_hub import login
+
+# Logging into HuggingFace
+
+login(token=os.environ['HF_TOKEN'])
+
+model = AutoModelForCausalLM.from_pretrained(
+    "mistralai/Mistral-7B-v0.1", 
+    device_map="auto",
+    load_in_4bit = True
+)
+
+tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-v0.1", padding_side="left")
+```
