@@ -21,6 +21,7 @@
     - [Introduction to Mistral-7B](#introduction-to-mistral-7b)
     - [Using Mistral-7B](#using-mistral-7b)
     - [Saving, Loading the model and the LLM function](#saving-loading-the-model-and-the-llm-function)
+ - [2.6 Exploring Open Source LLMs](#26-exploring-open-source-llms)
 
 ## 2.1 Open-Source LLMs - Introduction
 
