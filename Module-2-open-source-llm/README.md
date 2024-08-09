@@ -389,7 +389,7 @@ def llm(prompt):
 ```
 ## 2.6 Exploring Open Source LLMs
 
-We had just looked through a few models that are quite popular in the AI community, but there are a lot more open source models on HuggingFace. The question is "How do we decide which model to choose?"
+We had just looked through a few models that are quite popular in the AI community, but there are a lot more open source models on HuggingFace. The question is **"How do we decide which model to choose?"**
 
 The answer to the question is [open_llm_leaderboard](https://huggingface.co/spaces/open-llm-leaderboard/open_llm_leaderboard) on HuggingFace.The Open LLM Leaderboard is a platform that compares and ranks various open-source large language models based on their performance across different tasks,  including tasks related to common sense reasoning, reading comprehension, and mathematical abilities. Based on the tasks, you have an `Average` score which represents a composite measure of the model's performance across all evaluated tasks. Your choice of model can be based on either the overall score or based on the performance against the task. There are multiple tasks available on the leaderboard, but here's a few that includes their respective descriptions as well:
 
