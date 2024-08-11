@@ -468,7 +468,7 @@ def llm(prompt):
     return response.choices[0].message.content
 ```
 
-Please find the implementation in a jupyter notebook (here)[https://github.com/peterchettiar/LLMzoomcamp_2024/blob/main/Module-2-open-source-llm/ollama_example.ipynb].
+Please find the implementation in a jupyter notebook [here](https://github.com/peterchettiar/LLMzoomcamp_2024/blob/main/Module-2-open-source-llm/ollama_example.ipynb).
 
 > Note: In order to run the notebook, please make sure that ollama is installed and running. Also, do check if the model you want to use is pulled first before running.
 
