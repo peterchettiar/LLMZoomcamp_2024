@@ -22,6 +22,11 @@
     - [Using Mistral-7B](#using-mistral-7b)
     - [Saving, Loading the model and the LLM function](#saving-loading-the-model-and-the-llm-function)
  - [2.6 Exploring Open Source LLMs](#26-exploring-open-source-llms)
+ - [2.7 Running LLMa locally without a GPU using Ollama](#27-running-llma-locally-without-a-gpu-using-ollama)
+    - [Setting up and running Ollama](#setting-up-and-running-ollama)
+    - [Replacement for OpenAI API](#replacement-for-openai-api)
+    - [Running Ollama in Docker](#running-ollama-in-docker)
+    - [Customise a model](#customize-a-model)
 
 ## 2.1 Open-Source LLMs - Introduction
 
@@ -399,3 +404,119 @@ The answer to the question is [open_llm_leaderboard](https://huggingface.co/spac
 4. `GPQA` - Graduate-Level Google-Proof Q&A Benchmark is a highly challenging knowledge dataset with questions crafted by PhD-level domain experts in fields like biology, physics, and chemistry. These questions are designed to be difficult for laypersons but relatively easy for experts. The dataset has undergone multiple rounds of validation to ensure both difficulty and factual accuracy.
 5. `MuSR` - Multistep Soft Reasoning is a new dataset consisting of algorithmically generated complex problems, each around 1,000 words in length. The problems include murder mysteries, object placement questions, and team allocation optimizations. Solving these problems requires models to integrate reasoning with long-range context parsing. Few models achieve better than random performance on this dataset.
 6. `MMLU-PRO` - Massisve Multitask Language Understanding - Professional is a refined version of the MMLU dataset, which has been a standard for multiple-choice knowledge assessment. Recent research identified issues with the original MMLU, such as noisy data (some unanswerable questions) and decreasing difficulty due to advances in model capabilities and increased data contamination. MMLU-Pro addresses these issues by presenting models with 10 choices instead of 4, requiring reasoning on more questions, and undergoing expert review to reduce noise. As a result, MMLU-Pro is of higher quality and currently more challenging than the original.
+
+## 2.7 Running LLMa locally without a GPU using Ollama
+
+### Setting up and running Ollama
+
+Ollama is an open-source tool that allows users to run large language models (LLMs) locally on their personal computers. It simplifies the process of downloading, setting up, and interacting with various AI models like Llama 2, Mistral, and others.
+Key features:
+
+1. Easy installation and use
+2. Runs models locally for privacy and offline access
+3. Supports multiple open-source LLMs
+4. Simple command-line interface
+5. Ability to customize and create model configurations
+6. Includes an API for integration with other applications
+
+Ollama is popular among developers and AI enthusiasts who want to experiment with LLMs without relying on cloud services. It's designed to be efficient, allowing even larger models to run on standard consumer hardware.
+
+Setting up is quite easy, I am using `codespaces` so I ran the following command for linux based machines to install `ollama`:
+
+```bash
+curl -fsSL https://ollama.com/install.sh | sh
+```
+
+Next, I run the terminal command `ollama start` to initialise and start the `ollama` service on our machine. Now that we have `ollama` running, we can run the command `ollama run phi3` to be able to interact with the model locally. It's so easy to use!
+
+That would be the simplest way to use it, but there are two other methods to implement `ollama`:
+1. Replacement for `OpenAI` API
+2. Running `ollama` in docker 
+
+### Replacement for OpenAI API
+
+Interesting point to be shared in this section is that the `ollama` API is designed to be compatible with the `openai` API format.
+
+What this means is that we are able to use the `openai` Python Library, but its being configured to work with `ollama`. And all we have to do is to configure our connection to the `openai` API as follows:
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url='http://localhost:11434/v1/',
+    api_key='ollama',
+)
+```
+
+Here's what's happening:
+
+1. OpenAI Client: The code is importing and using the OpenAI client library.
+2. Custom Base URL: Instead of using OpenAI's servers, it's setting the `base_url` to `'http://localhost:11434/v1/'`, which is the local API endpoint for Ollama.
+3. API Key: `The api_key` is set to 'ollama', which is a placeholder value. Ollama doesn't actually require an API key for local use.
+
+This setup allows you to use the OpenAI Python library's interface to interact with Ollama-served models running locally on your machine. It's a clever way to use a familiar API structure (OpenAI's) with locally hosted models through Ollama.
+
+Please note that the `llm` function should be amended as well, instead of `gpt-4o`, the model argument should be specified to one of the `ollama` models. In our example, we use `phi3`.
+
+```python
+def llm(prompt):
+    response = client.chat.completions.create(
+        model='phi3',
+        messages=[{"role": "user", "content": prompt}]
+    )
+    
+    return response.choices[0].message.content
+```
+
+Please find the implementation in a jupyter notebook (here)[].
+
+> Note: In order to run the notebook, please make sure that ollama is installed and running. Also, do check if the model you want to use is pulled first before running.
+
+### Running Ollama in Docker
+
+Another interesting way of running `ollama` is using `docker`. Some people prefer using docker as it is self-contained although `ollama` only has one executable.
+
+command for running `ollama` container on `docker`.
+```bash
+docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama
+```
+Lets break down the command:
+`docker run` : start a new container from image, if image is not available it would be pulled from `dockerhub`
+`-d` : run container as daemon or detached mode, meaning it runs in the background
+`-v ollama:/root/.ollama` : This creates a volume named 'ollama' and mounts it to `/root/.ollama` in the container. This is used for persistent storage of Ollama data
+`-p 11434:11434` : This maps port 11434 on your host machine to port 11434 in the container. This is the default port Ollama uses for its API.
+`--name ollama` : This assigns the name 'ollama' to the running container for easy reference.
+`ollama/ollama` : This specifies the Docker image to use, in this case, the official Ollama image
+
+Now, that we have the `ollama` server running, we want to use the `client` to be able to ask questions.
+
+The command for doing so is (i.e. running the command inside the container):
+```bash
+docker exec -it ollama ollama run phi3
+```
+`docker exec` : runnning a command inside a container
+`it` : run the command in interactive terminal
+`ollama` : name of the container
+`ollama run phi3` : command to be run on the host - in this case we want to pull model as well as run it
+
+### Customize a model
+
+Import from GGUF
+
+Ollama supports importing GGUF models in the MOdelfile:
+
+1. Create a file named `Modelfile`, with a `FROM` instruction with the local filepath to the model you want to import.
+
+```bash
+FROM ./vicuna-33b.Q4_0.gguf
+```
+
+2. Create the model in Ollama
+```bash
+ollama create example -f Modelfile
+```
+
+3. Run the model
+```bash
+ollama run example
+```
