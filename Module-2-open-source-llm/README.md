@@ -450,11 +450,11 @@ client = OpenAI(
 
 Here's what's happening:
 
-1. OpenAI Client: The code is importing and using the OpenAI client library.
-2. Custom Base URL: Instead of using OpenAI's servers, it's setting the `base_url` to `'http://localhost:11434/v1/'`, which is the local API endpoint for Ollama.
-3. API Key: `The api_key` is set to 'ollama', which is a placeholder value. Ollama doesn't actually require an API key for local use.
+1. `OpenAI Client`: The code is importing and using the OpenAI client library.
+2. `Custom Base URL`: Instead of using OpenAI's servers, it's setting the `base_url` to `'http://localhost:11434/v1/'`, which is the local API endpoint for `ollama`.
+3. API Key: `The api_key` is set to 'ollama', which is a placeholder value. `ollama` doesn't actually require an API key for local use.
 
-This setup allows you to use the OpenAI Python library's interface to interact with Ollama-served models running locally on your machine. It's a clever way to use a familiar API structure (OpenAI's) with locally hosted models through Ollama.
+This setup allows you to use the `OpenAI` Python library's interface to interact with Ollama-served models running locally on your machine. It's a clever way to use a familiar API structure (OpenAI's) with locally hosted models through Ollama.
 
 Please note that the `llm` function should be amended as well, instead of `gpt-4o`, the model argument should be specified to one of the `ollama` models. In our example, we use `phi3`.
 
@@ -520,3 +520,78 @@ ollama create example -f Modelfile
 ```bash
 ollama run example
 ```
+
+## 2.8 Ollama & Phi3 + Elastic in Docker-Compose
+
+In this section, we will be building on top of the previous section where we had run `ollama` locally, ran it as a replacement for `openai` API as well as running it from a docker container. But that was very specific to only running `ollama` LLM models. However, recall that in our RAG architecture we had another component other than the LLM model, our knowledge base. 
+
+So far for the purpose of illustration we had implemented the toy search engine using `minsearch.py` library for ease of running it in `saturn cloud`. And we had mentioned in the previous module that this was to be replaced by `elasticsearch` - a powerful open-source search and analytics engine, as this makes the architecture more production ready.
+
+And the best approach for running the models together is using docker. So let's go through in the next section on how to create a docker compose `YAML` file, and the command to run multiple container as specified in the `YAML` file.
+
+### Creating a docker compose file
+
+A docker-compose `YAML` file is nothing more than a `requirements.txt` file when setting up a virtual environment for a new project. But instead of installing dependencies, you are defining the services of the container applications you would like to spin up. In our case, the two services are `elasticsearch` and `ollama`.
+
+And defining our services is essentially the reformatting of docker commands that we had run previously. Let's take the `ollama` docker commands as an example. We had the following 2 commands:
+```bash
+1. docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama
+2. docker exec -it ollama ollama run phi3
+```
+
+These commands are to firstly spin up and run the `ollama` container from its docker image, followed by runnning the `phi3` model from inside the container. So if I had to convert to a docker-compose file, the same command would look like the following in the `YAML` file:
+```yaml
+version: '3.8'
+
+services:
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    volumes:
+      - ollama:/root/.ollama
+    ports:
+      - "11434:11434"
+    command: sh -c "ollama serve & sleep 10 && ollama run phi3"
+    init: true
+
+volumes:
+  ollama:
+    name: ollama
+```
+
+Notice that they are almost the same. `init: true` ensures that the container uses an init process, which can help with process management and zombie process reaping. And `command` is to specify to start the `ollama` server in the background, wait for 10 seconds before running the `phi3` model. 
+
+> Note: A new container needs to be created using this docker-compose file with the command tweaked according to the model that we want to use.
+
+Similary, if we were to convert the command that we used to run `elasticsearch` with docker:
+```bash
+docker run -it \
+    --rm \
+    --name elasticsearch \
+    -p 9200:9200 \
+    -p 9300:9300 \
+    -e "discovery.type=single-node" \
+    -e "xpack.security.enabled=false" \
+    docker.elastic.co/elasticsearch/elasticsearch:8.4.3
+```
+
+It would look something like this:
+```yaml
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.4.3
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+```
+
+So combining both together would give you something like thie [docker-compose.yaml]() file. 
+
+### Modifying module 1 notebook
+
+
+### RAG flow functions and response from Ollama
