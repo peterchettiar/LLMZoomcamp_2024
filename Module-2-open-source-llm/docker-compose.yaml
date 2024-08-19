@@ -17,8 +17,10 @@ services:
             - ollama:/root/.ollama
         ports:
             - "11434:11434"
-        command: sh -c "ollama serve & sleep 10 && ollama run phi3"
-        init: true
+        deploy:
+            resources:
+                limits:
+                    memory: 6G
 
 volumes:
     ollama:

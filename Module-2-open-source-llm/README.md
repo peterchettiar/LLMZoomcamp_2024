@@ -544,15 +544,17 @@ These commands are to firstly spin up and run the `ollama` container from its do
 version: '3.8'
 
 services:
-  ollama:
-    image: ollama/ollama
-    container_name: ollama
-    volumes:
-      - ollama:/root/.ollama
-    ports:
-      - "11434:11434"
-    command: sh -c "ollama serve & sleep 10 && ollama run phi3"
-    init: true
+    ollama:
+        image: ollama/ollama
+        container_name: ollama
+        volumes:
+            - ollama:/root/.ollama
+        ports:
+            - "11434:11434"
+        deploy:
+            resources:
+                limits:
+                    memory: 6G
 
 volumes:
   ollama:
@@ -589,7 +591,7 @@ services:
       - "9300:9300"
 ```
 
-So combining both together would give you something like thie [docker-compose.yaml]() file. 
+So combining both together would give you something like thie [docker-compose.yaml](https://github.com/peterchettiar/LLMzoomcamp_2024/blob/main/Module-2-open-source-llm/docker-compose.yaml) file. 
 
 ### Modifying module 1 notebook
 
