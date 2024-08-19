@@ -30,8 +30,7 @@
 - [2.8 Ollama & Phi3 + Elastic in Docker-Compose](#28-ollama--phi3--elastic-in-docker-compose)
     - [Creating a docker compose file](#creating-a-docker-compose-file)
     - [Modifying module 1 notebook](#modifying-module-1-notebook)
-    - [RAG flow functions and response from Ollama](#rag-flow-functions-and-response-from-ollama)
-    
+
 ## 2.1 Open-Source LLMs - Introduction
 
 In this week's lecture, we will be exploring alternatives to `OPENAI`, and in particular, we will be discussing more on **Open-Sourced LLMs** and how to run them. There are several ways to run open-source LLM models, depending on your technical expertise and available resources. Here are some options:
@@ -666,5 +665,3 @@ rm -rf /root/.ollama/cache/*
 ```
 
 Please find the complete notebook which includes `elasticsearch` query function [here](https://github.com/peterchettiar/LLMzoomcamp_2024/blob/main/Module-2-open-source-llm/rag_elasticsearch.ipynb).
-
-### RAG flow functions and response from Ollama
