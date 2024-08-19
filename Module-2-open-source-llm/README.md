@@ -553,7 +553,7 @@ services:
             - "11434:11434"
         deploy:
             resources:
-                limits:
+                limits:free
                     memory: 6G
 
 volumes:
