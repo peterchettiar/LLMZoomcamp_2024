@@ -595,5 +595,72 @@ So combining both together would give you something like thie [docker-compose.ya
 
 ### Modifying module 1 notebook
 
+Now that we have the `elasticsearch` and `ollama` services up and running with the `docker-compose up -d` command, we can now proceed with the changes in our [rag_intro.ipynb](https://github.com/peterchettiar/LLMzoomcamp_2024/blob/main/Module-1-introduction/rag_intro.ipynb) Jupyter Notebook from Module 1 to replace `minsearch` with `elasticsearch` as well as using the `openai` framework to run `ollama` models.
+
+1. Implementing `elasticsearch` - connect to `elasticsearch` instance running on `localhost` on port `9200`; a dictionary that defines the settings and mappings of the index; and creating the index using the `documents` JSON file:
+```python
+# connecting to the es client and defining our index
+
+es_client = Elasticsearch("http://localhost:9200") 
+
+index_settings = {
+    "settings": {
+        "number_of_shards": 1,
+        "number_of_replicas": 0
+    },
+    "mappings": {
+        "properties": {
+            "text": {"type": "text"},
+            "section": {"type": "text"},
+            "question": {"type": "text"},
+            "course": {"type": "keyword"} 
+        }
+    }
+}
+
+index_name = "course-faqs"
+
+# lets delete and create a new index if it exists for ease of re-runs
+if es_client.indices.exists(index="course-faqs"):
+    es_client.indices.delete(index="course-faqs")
+
+es_client.indices.create(index=index_name, body=index_settings)
+```
+There is also a possibility you might run into `ConnectionTimeout: Connection timed out` error. The problem is to do with the disk usage in total. The solution is to manually set the watermarks after the nodes have started. Run the following 2 commands:
+```bash
+curl -XPUT -H "Content-Type: application/json" http://localhost:9200/_cluster/settings -d '{ "transient": { "cluster.routing.allocation.disk.threshold_enabled": false } }'
+curl -XPUT -H "Content-Type: application/json" http://localhost:9200/_all/_settings -d '{"index.blocks.read_only_allow_delete": null}'
+```
+
+2. Modify the `llm` function
+
+As mentioned we can run the `ollama` models using the `openai` framework. As such we need to amend the connection to the `openai` client as follows:
+
+```python
+client = OpenAI(
+    base_url='http://localhost:11434/v1/',
+    api_key='ollama',
+)
+```
+Next, we need to modify the `llm` function as follows - please note that the model used was `gemma2:2b`:
+```python
+def llm(prompt):
+
+    response = client.chat.completions.create(
+        model='gemma2:2b',
+        messages=[{'role':'user',
+                   'content': prompt}]
+    )
+
+    return response.choices[0].message.content
+```
+
+In instances where you run the bash command `ollama pull phi3` in the `ollama` container, and get the error `Error: digest mismatch, file must be downloaded again`, the most likely cause for this is a corrupted cache. Run the following command to clear the cache associated with the `ollama` tool:
+
+```bash
+rm -rf /root/.ollama/cache/*
+```
+
+Please find the complete notebook which includes `elasticsearch` query function [here](https://github.com/peterchettiar/LLMzoomcamp_2024/blob/main/Module-2-open-source-llm/rag_elasticsearch.ipynb).
 
 ### RAG flow functions and response from Ollama
