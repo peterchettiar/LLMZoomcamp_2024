@@ -30,6 +30,7 @@
 - [2.8 Ollama & Phi3 + Elastic in Docker-Compose](#28-ollama--phi3--elastic-in-docker-compose)
     - [Creating a docker compose file](#creating-a-docker-compose-file)
     - [Modifying module 1 notebook](#modifying-module-1-notebook)
+- [2.9 Creating a Streamlit UI](#29-creating-a-streamlit-ui)
 
 ## 2.1 Open-Source LLMs - Introduction
 
@@ -665,3 +666,20 @@ rm -rf /root/.ollama/cache/*
 ```
 
 Please find the complete notebook which includes `elasticsearch` query function [here](https://github.com/peterchettiar/LLMzoomcamp_2024/blob/main/Module-2-open-source-llm/rag_elasticsearch.ipynb).
+
+
+## 2.9 Creating a Streamlit UI
+
+Plan for deploying Streamlit:
+
+1. Create a folder to place all the scripts for ease of deployment - remember to create a enironment file that contains the dependencies that we want to include in our python container before deploying streamlit
+
+2. Inside the folder, we want to create a python script that runs streamlit in the main function with the elasticsearch, prompt, llm defined outside the main function. The functions defined outside of main should be encapsulated in the rag function, that would be subsequently called into main as well.
+
+3. 
+
+4. Next we would want to create a dockerfile for streamlit to build our custom image from it - our python script would be included here as we want to run the script inside the container after we build the image
+
+5. Now to create a docker compose yaml file that includes elasticsearch, ollama and streamlit services all of which should be communicating on the same network - create a docker network and include this network as a command in the network flag on the docker compose file
+
+6. Lastly, we want to build and run the services using the command `docker-compose up --build`
