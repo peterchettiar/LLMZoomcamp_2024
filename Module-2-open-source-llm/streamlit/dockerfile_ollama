@@ -1,0 +1,6 @@
+# Use an official Python runtime as a parent image
+FROM ollama/ollama
+
+RUN ollama serve & \
+    sleep 10 && \
+    ollama pull gemma2:2b

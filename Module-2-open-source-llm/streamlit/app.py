@@ -1,21 +1,21 @@
 """Importing the necessary libraries"""
+
 import json
 import streamlit as st
 from openai import OpenAI
 from elasticsearch import Elasticsearch
-from tqdm import tqdm
 
 
 def initialize_openai() -> OpenAI:
     """Initializing the OpenAI client object with Ollama servers as the local API endpoint"""
-    client = OpenAI(base_url="http://localhost:11434/v1/", api_key="ollama")
+    client = OpenAI(base_url="http://ollama:11434/v1/", api_key="ollama")
 
     return client
 
 
 def initialize_elasticsearch(index_name: str) -> Elasticsearch:
     """Connects to the Elasticsearch client and defines a new index."""
-    es_client = Elasticsearch("http://localhost:9200")
+    es_client = Elasticsearch("http://elasticsearch:9200")
 
     index_settings = {
         "settings": {"number_of_shards": 1, "number_of_replicas": 0},
@@ -29,12 +29,15 @@ def initialize_elasticsearch(index_name: str) -> Elasticsearch:
         },
     }
 
+    if es_client.indices.exists(index=index_name):
+        es_client.indices.delete(index=index_name)
+
     es_client.indices.create(index=index_name, body=index_settings)
 
     return es_client
 
 
-def convert_json_to_list_object(json_file: str) -> list:
+def convert_json_to_list(json_file: str) -> list:
     """Converting our JSON file into a list"""
 
     with open(json_file, "rt", encoding="utf-8") as f_in:
@@ -44,7 +47,7 @@ def convert_json_to_list_object(json_file: str) -> list:
 
     for course_dict in docs_raw:
         for doc in course_dict["documents"]:
-            doc["course"] = course_dict["documents"]
+            doc["course"] = course_dict["course"]
             documents.append(doc)
 
     return documents
@@ -99,7 +102,7 @@ def build_prompt(query: str, search_results: list) -> str:
             f"section: {doc['section']}\n"
             f"question: {doc['question']}\n"
             f"answer: {doc['text']}\n\n"
-            )
+        )
 
     prompt = prompt_template.format(question=query, context=context).strip()
 
@@ -109,8 +112,7 @@ def build_prompt(query: str, search_results: list) -> str:
 def llm(prompt: str, client: OpenAI) -> str:
     """Function that calls ollama models using the openai framework"""
     response = client.chat.completions.create(
-        model="gemma2:2b",
-        messages=[{"role": "user", "content": prompt}]
+        model="gemma2:2b", messages=[{"role": "user", "content": prompt}]
     )
 
     return response.choices[0].message.content
@@ -124,18 +126,26 @@ def main():
     es_client = initialize_elasticsearch("course-faqs")
 
     # loading and indexing our knowledge base
-    documents = convert_json_to_list_object("documents.json")
-    for doc in tqdm(documents):
+    documents = convert_json_to_list("documents.json")
+
+    # indexing documents into ElasticSearch
+    for doc in documents:
         es_client.index(index="course-faqs", document=doc)
 
-    st.title("RAG Function Invocation")
+    st.title("LLM Zoomcamp FAQs")
 
     user_input = st.text_input("Enter your input:")
 
     if st.button("Ask"):
         with st.spinner("Processing..."):
+            search_results = elastic_search(
+                query=user_input, es_client=es_client, index_name="course-faqs"
+            )
 
-            output = rag(user_input)
+            prompt = build_prompt(query=user_input, search_results=search_results)
+
+            output = llm(prompt=prompt, client=openai_client)
+
             st.success("Completed!")
             st.write(output)
 

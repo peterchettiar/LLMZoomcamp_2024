@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
     elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:8.4.3
@@ -11,17 +9,36 @@ services:
             - "9200:9200"
             - "9300:9300"
     ollama:
+        build:
+            context: .
+            dockerfile: dockerfile_ollama
         image: ollama/ollama
         container_name: ollama
         volumes:
-            - ollama:/root/.ollama
+            - ollama_streamlit:/root/.ollama
         ports:
             - "11434:11434"
         deploy:
             resources:
                 limits:
                     memory: 6G
+    streamlit:
+        build:
+            context: .
+            dockerfile: dockerfile_streamlit
+        image: streamlit_image
+        container_name: streamlit
+        ports:
+            - "8501:8501"
+        volumes:
+            - .:/app
+            - ./documents.json:/app/documents.json
+        environment:
+            - PYTHONUNBUFFERED=1
+            - PYTHONDONTWRITEBYTECODE 1
+        depends_on:
+            - elasticsearch
+            - ollama
 
 volumes:
-    ollama:
-        name: ollama
+    ollama_streamlit:
