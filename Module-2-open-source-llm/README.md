@@ -714,16 +714,101 @@ Please find the complete notebook which includes `elasticsearch` query function 
 
 ## 2.9 Creating a Streamlit UI
 
-Plan for deploying Streamlit:
+So far we have `elasticsearch` which helps index our knowledge base for faster retrieval of documents from our knowledge base (i.e. a search engine), as well as `ollama` which provides a simple API for creating, running and managing LLMs. Both of these tools can be spun-up as containers when we define them as services in a `docker-compose.yaml` file. Doing so, as mentioned, provides a more efficient way for deployment in a more productionised setting.
 
-1. Create a folder to place all the scripts for ease of deployment - remember to create a enironment file that contains the dependencies that we want to include in our python container before deploying streamlit
+However, what we have done so far is to only define the backend of our product. The missing piece of the puzzle would be to have a frontend as well, to complete the product. This is where `streamlit` comes in to play. `streamlit` allows you to transform python scripts to interactive web apps in minutes. This too can be deployed using docker. So for deploying our web app we are going to need three things:
+1. Dockerfile - since `streamlit` uses a python framework, we can build an image for streamlit using the `python:3.10-slim` base image from dockerhub.
+2. Python Script - we need a python script to establish the connections to the services spun up by docker as well as , I have basically converted what we had done in jupyter notebook in the previous section to a python script. Running this script would be called in [dockerfile_streamlit](https://github.com/peterchettiar/LLMzoomcamp_2024/blob/main/Module-2-open-source-llm/streamlit/dockerfile_streamlit).
+3. Docker-compose file - here we define and build the services that we need to run for the front and backends in a `YAML` file
 
-2. Inside the folder, we want to create a python script that runs streamlit in the main function with the elasticsearch, prompt, llm defined outside the main function. The functions defined outside of main should be encapsulated in the rag function, that would be subsequently called into main as well.
+I think it would be worthwhile to share some of the key points of each file that I think its important and perhaps useful. So the fist thing you should work on is obviously the [app.py](https://github.com/peterchettiar/LLMzoomcamp_2024/blob/main/Module-2-open-source-llm/streamlit/app.py) as without the python script, you cannot actually proceed to the next steps. The only point worth noting is to change the service name in the script to match our docker compose configuration as follows:
+```python
+def initialize_openai() -> OpenAI:
+    """Initializing the OpenAI client object with Ollama servers as the local API endpoint"""
+    client = OpenAI(base_url="http://ollama:11434/v1/", api_key="ollama")
 
-3. Introduction to Object Serialization | `python -m streamlit run app.py`
+    return client
 
-4. Next we would want to create a dockerfile for streamlit to build our custom image from it - our python script would be included here as we want to run the script inside the container after we build the image
 
-5. Now to create a docker compose yaml file that includes elasticsearch, ollama and streamlit services all of which should be communicating on the same network - create a docker network and include this network as a command in the network flag on the docker compose file
+def initialize_elasticsearch(index_name: str) -> Elasticsearch:
+    """Connects to the Elasticsearch client and defines a new index."""
+    es_client = Elasticsearch("http://elasticsearch:9200")
 
-6. Lastly, we want to build and run the services using the command `docker-compose up --build`
+    index_settings = {
+        "settings": {"number_of_shards": 1, "number_of_replicas": 0},
+        "mappings": {
+            "properties": {
+                "text": {"type": "text"},
+                "section": {"type": "text"},
+                "question": {"type": "text"},
+                "course": {"type": "keyword"},
+            }
+        },
+    }
+
+    if es_client.indices.exists(index=index_name):
+        es_client.indices.delete(index=index_name)
+
+    es_client.indices.create(index=index_name, body=index_settings)
+
+    return es_client
+```
+These changes replace `localhost` with the service names defined in the docker compose file. This ensures that your `streamlit` app can communicate with the `ollama` and `elasticsearch` services withtin the docker network.
+
+Next we want to build our [Dockerfile](https://github.com/peterchettiar/LLMzoomcamp_2024/blob/main/Module-2-open-source-llm/streamlit/dockerfile_streamlit) for `streamlit`. The steps defined in this file to build the image is rather straightforward, all you have to do is:
+- set a python version as the base image
+- create a new working directory in the container (I called this folder app)
+- create a requirements.txt file and copy it over to the working directory in the container
+- pip install the dependecies listed in the requirements.txt
+- next we are going to copy all the files from our local current working directory to working directory in the container
+- now we have to expose the port we want to run streamlit on
+- lastly we run the `streamlit run app.py` command in the bash terminal of the container
+
+Now we define these services (`elasticsearch`,`ollama`,`streamlit`) in our docker-compose file as follows:
+```yaml
+services:
+    elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:8.4.3
+        container_name: elasticsearch
+        environment:
+            - discovery.type=single-node
+            - xpack.security.enabled=false
+        ports:
+            - "9200:9200"
+            - "9300:9300"
+    ollama:
+        build:
+            context: .
+            dockerfile: dockerfile_ollama
+        image: ollama/ollama
+        container_name: ollama
+        volumes:
+            - ollama_streamlit:/root/.ollama
+        ports:
+            - "11434:11434"
+        deploy:
+            resources:
+                limits:
+                    memory: 6G
+    streamlit:
+        build:
+            context: .
+            dockerfile: dockerfile_streamlit
+        image: streamlit_image
+        container_name: streamlit
+        ports:
+            - "8501:8501"
+        volumes:
+            - .:/app
+            - ./documents.json:/app/documents.json
+        environment:
+            - PYTHONUNBUFFERED=1
+            - PYTHONDONTWRITEBYTECODE 1
+        depends_on:
+            - elasticsearch
+            - ollama
+
+volumes:
+    ollama_streamlit:
+```
+Lastly all we got to do is run the `docker compose build` to build the streamlit image followed by `docker compose up -d` to spin up the services in detached mode.
