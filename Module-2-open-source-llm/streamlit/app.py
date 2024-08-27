@@ -5,6 +5,8 @@ import streamlit as st
 from openai import OpenAI
 from elasticsearch import Elasticsearch
 
+INDEX_NAME = "course-faqs"
+
 
 def initialize_openai() -> OpenAI:
     """Initializing the OpenAI client object with Ollama servers as the local API endpoint"""
@@ -123,14 +125,14 @@ def main():
 
     openai_client = initialize_openai()
 
-    es_client = initialize_elasticsearch("course-faqs")
+    es_client = initialize_elasticsearch(INDEX_NAME)
 
     # loading and indexing our knowledge base
     documents = convert_json_to_list("documents.json")
 
     # indexing documents into ElasticSearch
     for doc in documents:
-        es_client.index(index="course-faqs", document=doc)
+        es_client.index(index=INDEX_NAME, document=doc)
 
     st.title("LLM Zoomcamp FAQs")
 

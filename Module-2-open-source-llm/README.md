@@ -3,33 +3,33 @@
 ### Table of contents
 
 - [2.1 Open-Source LLMs - Introduction](#21-open-source-llms---introduction)
-    - [Open-Source LLMs](#open-source-llms)
-    - [Replacing the LLM box in the RAG flow](#replacing-the-llm-box-in-the-rag-flow)
+  - [Open-Source LLMs](#open-source-llms)
+  - [Replacing the LLM box in the RAG flow](#replacing-the-llm-box-in-the-rag-flow)
 - [2.2 Using a GPU in Saturn Cloud](#22-using-a-gpu-in-saturn-cloud)
-    - [Registering in Saturn Cloud](#registering-in-saturn-cloud)
-    - [Configuring Secrets and Git](#configuring-secrets-and-git)
-    - [Creating an instance with GPU](#creating-an-instance-with-gpu)
+  - [Registering in Saturn Cloud](#registering-in-saturn-cloud)
+  - [Configuring Secrets and Git](#configuring-secrets-and-git)
+  - [Creating an instance with GPU](#creating-an-instance-with-gpu)
 - [2.3 FLAN-T5-XL](#23-flan-t5)
-    - [Hugging Face](#hugging-face)
-    - [Google FlAN T5 XL](#google-flan-t5-xl)
-    - [Rewriting the LLM Function](#rewriting-the-llm-function)
+  - [Hugging Face](#hugging-face)
+  - [Google FlAN T5 XL](#google-flan-t5-xl)
+  - [Rewriting the LLM Function](#rewriting-the-llm-function)
 - [2.4 Phi 3 Mini](#24-phi-3-mini)
-    - [Introduction to Microsoft's Phi3](#introduction-to-microsofts-phi3)
-    - [Nvidia-SIM, Model Size and using Phi3](#nvidia-ami-model-size-and-using-phi3)
-    - [Using Phi3 for RAG](#using-phi3-for-rag)
- - [2.5 Mistral-7B](#25-mistral-7b)
-    - [Introduction to Mistral-7B](#introduction-to-mistral-7b)
-    - [Using Mistral-7B](#using-mistral-7b)
-    - [Saving, Loading the model and the LLM function](#saving-loading-the-model-and-the-llm-function)
- - [2.6 Exploring Open Source LLMs](#26-exploring-open-source-llms)
- - [2.7 Running LLMa locally without a GPU using Ollama](#27-running-llma-locally-without-a-gpu-using-ollama)
-    - [Setting up and running Ollama](#setting-up-and-running-ollama)
-    - [Replacement for OpenAI API](#replacement-for-openai-api)
-    - [Running Ollama in Docker](#running-ollama-in-docker)
-    - [Customise a model](#customize-a-model)
+  - [Introduction to Microsoft's Phi3](#introduction-to-microsofts-phi3)
+  - [Nvidia-SIM, Model Size and using Phi3](#nvidia-ami-model-size-and-using-phi3)
+  - [Using Phi3 for RAG](#using-phi3-for-rag)
+- [2.5 Mistral-7B](#25-mistral-7b)
+  - [Introduction to Mistral-7B](#introduction-to-mistral-7b)
+  - [Using Mistral-7B](#using-mistral-7b)
+  - [Saving, Loading the model and the LLM function](#saving-loading-the-model-and-the-llm-function)
+- [2.6 Exploring Open Source LLMs](#26-exploring-open-source-llms)
+- [2.7 Running LLMa locally without a GPU using Ollama](#27-running-llma-locally-without-a-gpu-using-ollama)
+  - [Setting up and running Ollama](#setting-up-and-running-ollama)
+  - [Replacement for OpenAI API](#replacement-for-openai-api)
+  - [Running Ollama in Docker](#running-ollama-in-docker)
+  - [Customise a model](#customize-a-model)
 - [2.8 Ollama & Phi3 + Elastic in Docker-Compose](#28-ollama--phi3--elastic-in-docker-compose)
-    - [Creating a docker compose file](#creating-a-docker-compose-file)
-    - [Modifying module 1 notebook](#modifying-module-1-notebook)
+  - [Creating a docker compose file](#creating-a-docker-compose-file)
+  - [Modifying module 1 notebook](#modifying-module-1-notebook)
 - [2.9 Creating a Streamlit UI](#29-creating-a-streamlit-ui)
 
 ## 2.1 Open-Source LLMs - Introduction
@@ -37,31 +37,39 @@
 In this week's lecture, we will be exploring alternatives to `OPENAI`, and in particular, we will be discussing more on **Open-Sourced LLMs** and how to run them. There are several ways to run open-source LLM models, depending on your technical expertise and available resources. Here are some options:
 
 1. Local Machine:
+
 - If you have a powerful computer with a good GPU, you can run models using libraries like Hugging Face's `Transformers` or `LlamaIndex`.
 - This requires some technical knowledge and setup.
 
 2. Cloud Services:
+
 - Google Colab: Free option with GPU access, good for experimenting.
 - AWS SageMaker, Google Cloud AI Platform, or Azure Machine Learning: For more robust, scalable solutions.
 
 3. Specialized Platforms:
+
 - `Hugging Face`: Offers a platform to run many open-source models.
 - `Replicate`: Allows running various AI models in the cloud.
 
 4. Self-hosted Solutions:
+
 - Set up your own server or use a service like `Paperspace` or `Lambda Labs`.
 
 5. Containerized Deployments:
+
 - Use `Docker` to package and deploy models on various platforms.
 
 6. Specialized Hardware:
+
 - `Raspberry Pi` or other single-board computers for smaller models.
 
 7. Open-source Frameworks:
+
 - `Ollama`: Allows running LLMs locally with a simple interface.
 - `LocalAI`: For running AI models on consumer-grade hardware.
 
 8. Community-driven Platforms:
+
 - `EleutherAI`: Offers access to some of their models.
 
 Remember, running large models requires significant computational resources. Smaller models or quantized versions might be more suitable for personal use.
@@ -71,48 +79,60 @@ Remember, running large models requires significant computational resources. Sma
 There are many open-source LLM models available. Here's a list of some popular ones:
 
 1. BERT (Bidirectional Encoder Representations from Transformers)
+
 - Developed by Google
 - Good for understanding context in language
 
 2. GPT-2 (Generative Pre-trained Transformer 2)
+
 - Created by OpenAI
 - Smaller version of GPT-3, good for text generation
 
 3. T5 (Text-to-Text Transfer Transformer)
+
 - Developed by Google
 - Versatile model for various NLP tasks
 
 4. BLOOM (BigScience Large Open-science Open-access Multilingual Language Model)
+
 - Created by BigScience
 - Large multilingual model
 
 5. LLaMA (Large Language Model Meta AI)
+
 - Developed by Meta (Facebook)
 - Range of sizes, from 7B to 65B parameters
 
 6. Falcon
+
 - Created by Technology Innovation Institute (TII)
 - Known for efficiency and performance
 
 7. RWKV
+
 - An alternative architecture to Transformer models
 - Good for both small and large-scale deployments
 
 8. GPT-J and GPT-NeoX
+
 - Developed by EleutherAI
 - Open-source alternatives to GPT-3
 
 9. OPT (Open Pre-trained Transformer)
+
 - Released by Meta
 - Designed to be more accessible for research
 
 10. FLAN-T5
+
 - Google's instruction-tuned version of T5
 
 11. Pythia
+
 - A suite of models from EleutherAI for studying AI behavior
 
 13. Dolly
+
 - Databricks' instruction-following model
 
 These are to name a few and we should be having a feel of few of them in subsequent lectures. And what we are going to cover is how to run these models, which normally requires a lot of GPU. And we are going to need a proper environment for doing so. This too will be discussed as we progress into the course.
@@ -128,7 +148,7 @@ In particular, we will see how to set up an environment and use different LLMs, 
 ## 2.2 Using a GPU in Saturn Cloud
 
 In this section we are going to learn more about `SaturnCloud` and how to set up a GPU-enabled notebook as they are required for most open-sourced LLMs, and `SaturnCloud` provides the enviroment for doing so. There are of course alternatives like `GoogleColab` and `AWS SageMaker`, but feel free to use what works best for you.
- 
+
 ### Registering in Saturn Cloud
 
 Go to [SaturnCloud's](https://saturncloud.io/) website and click on `Get a Techinical Demo`
@@ -181,16 +201,16 @@ For setting up `git` access, you need to configure `USER SETTINGS` in Saturn Clo
 Now that the `git` access is set up, we can now `Create a Jupyter Server`. To do so, follow these steps:
 
 1. First navigate to the page for creating a `jupyter server` - click on `Resources`, then on `New Python Server`.
-![image](https://github.com/peterchettiar/LLMzoomcamp_2024/assets/89821181/716a286a-e637-4324-b9c5-65dad61b6a4a)
+   ![image](https://github.com/peterchettiar/LLMzoomcamp_2024/assets/89821181/716a286a-e637-4324-b9c5-65dad61b6a4a)
 2. Under the `Overview` section, add any name you prefer but I went with `llm-zoomcamp-gpu`. For `Hardware`, make sure you select `GPU`, and the deafault size is as shown below (Note: its a free resource, so this is the only `GPU` resource that is available to us)
-![image](https://github.com/peterchettiar/LLMzoomcamp_2024/assets/89821181/8d4735aa-fec0-4a01-9f73-a6765c000ddb)
+   ![image](https://github.com/peterchettiar/LLMzoomcamp_2024/assets/89821181/8d4735aa-fec0-4a01-9f73-a6765c000ddb)
 3. Next we need to choose our `image` as well as `pip install` extra packages as follows in the `Environment` section.
-![image](https://github.com/peterchettiar/LLMzoomcamp_2024/assets/89821181/29c43ae3-b377-47b0-a054-6189ca4cd8e9)
+   ![image](https://github.com/peterchettiar/LLMzoomcamp_2024/assets/89821181/29c43ae3-b377-47b0-a054-6189ca4cd8e9)
 4. Since we added our `git repo` in the git repositories page earlier, we can now select it from the dropdown.
-![image](https://github.com/peterchettiar/LLMzoomcamp_2024/assets/89821181/ab64b443-7a0b-469b-b75a-6cee134cecd7)
+   ![image](https://github.com/peterchettiar/LLMzoomcamp_2024/assets/89821181/ab64b443-7a0b-469b-b75a-6cee134cecd7)
 5. That is pretty much it - we can now just click `create` at the bottom of the page.
 6. This should lead you to the following page - if you need to add your `enironement variables` you can do so in the `Secrets and Roles` page as highlighted.
-![image](https://github.com/peterchettiar/LLMzoomcamp_2024/assets/89821181/7b53a264-38fa-42fc-9d92-3e6acf412686)
+   ![image](https://github.com/peterchettiar/LLMzoomcamp_2024/assets/89821181/7b53a264-38fa-42fc-9d92-3e6acf412686)
 
 ## 2.3 FLAN-T5
 
@@ -206,9 +226,10 @@ For a more detailed introduction to `HuggingFace` and the `transformers` library
 
 ### Google FlAN T5 XL
 
-The Google `FLAN-T5-XL` is a larger variant of the `FLAN-T5` model family. The model as well as their description and usage, amongst others, are available [here](https://huggingface.co/google/flan-t5-xl). And as mentioned eariler, its available on the `Hugging Face Model Hub`. 
+The Google `FLAN-T5-XL` is a larger variant of the `FLAN-T5` model family. The model as well as their description and usage, amongst others, are available [here](https://huggingface.co/google/flan-t5-xl). And as mentioned eariler, its available on the `Hugging Face Model Hub`.
 
 The `FLAN-T5-XL` is a versatile model for a range of natural language processing tasks which includes Text Summarisation, Language Translation and Text Generation to name a few. Let's take the example usage from the model page shared earlier or as follows:
+
 ```python
 # pip install accelerate
 from transformers import T5Tokenizer, T5ForConditionalGeneration
@@ -232,6 +253,7 @@ import os
 
 os.environ['HF_HOME'] = '/run/cache'
 ```
+
 Now you should be able to run the model code snippet without any errors. Now let's quickly dissect the code snippet. The main part really is the `tokenizer` - breaking down text into words, subwords, or characters into tokens and converting them into numerical IDs. This enables machine learning models to understand the inputs texts. Hence why your `input_ids` is a tensor array of token IDs.
 
 ![image](https://github.com/peterchettiar/LLMzoomcamp_2024/assets/89821181/1c3e2fbe-dcb6-41ca-b9eb-de926892ab35)
@@ -241,6 +263,7 @@ Now you should be able to run the model code snippet without any errors. Now let
 Keep in mind that we still use our `minsearch` package for searching through our database - in our case its the `FAQs` JSON file we had downloaded in the previous section.
 
 There were three main functions encapsulated in the `rag` function that we had written before.
+
 ```python
 def rag(query):
     search_results = search(query)
@@ -250,6 +273,7 @@ def rag(query):
 ```
 
 But the only one that we are modifying is the `llm` function as we are changing the model from `GPT4` to `FLAN-T5-XL`.
+
 ```python
 def llm(prompt, generate_params=None):
     if generate_params is None:
@@ -268,6 +292,7 @@ def llm(prompt, generate_params=None):
     result = tokenizer.decode(outputs[0], skip_special_tokens=True)
     return result
 ```
+
 > Note: the snippet contains more parameters as we want to make the output longer.
 
 Explanation of Parameters:
@@ -277,7 +302,6 @@ Explanation of Parameters:
 - `do_sample`: Set this to True to use sampling methods. This can produce more diverse responses.
 - `temperature`: Lowering this value makes the model more confident and deterministic, while higher values increase diversity. Typical values range from 0.7 to 1.5.
 - `top_k` and `top_p`: These parameters control nucleus sampling. `top_k` limits the sampling pool to the top `k` tokens, while `top_p` uses cumulative probability to cut off the sampling pool. Adjust these based on the desired level of randomness.
-
 
 ## 2.4 Phi 3 Mini
 
@@ -293,9 +317,10 @@ The model is intended for commercial and research use in English. The model prov
 2. Latency bound scenarios
 3. Strong reasoning (especially code, math and logic)
 
-###  Nvidia-AMI, Model Size and using Phi3
+### Nvidia-AMI, Model Size and using Phi3
 
 Run the `nvidia-smi` command on the terminal window in your `saturn cloud` instance to gather information on the following:
+
 - GPU Utilisation
 - Memory Usage
 - Temperature
@@ -309,6 +334,7 @@ Run the `nvidia-smi` command on the terminal window in your `saturn cloud` insta
 ### Using Phi3 for RAG
 
 More or less the structure is the same as the previous models - the only difference is the `llm function`:
+
 ```python
 def llm(prompt):
     messages = [
@@ -323,7 +349,7 @@ def llm(prompt):
     }
 
     output = pipe(messages, **generation_args)
-    
+
     return output[0]['generated_text'].strip()
 ```
 
@@ -362,13 +388,14 @@ from huggingface_hub import login
 login(token=os.environ['HF_TOKEN'])
 
 model = AutoModelForCausalLM.from_pretrained(
-    "mistralai/Mistral-7B-v0.1", 
+    "mistralai/Mistral-7B-v0.1",
     device_map="auto",
     load_in_4bit = True
 )
 
 tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-v0.1", padding_side="left")
 ```
+
 ### Saving, Loading the model and the LLM function
 
 The model is quite large, and so it is not advised to download the model for each run. We can download it once, and then subsequently save followed by loading it from a local directory. To do so, we can do the following for saving the `model` as well as `tokenizer`:
@@ -379,6 +406,7 @@ The model is quite large, and so it is not advised to download the model for eac
 model.save_pretrained("./mistral-7b-model")
 tokenizer.save_pretrained("./mistral-7b-tokenizer")
 ```
+
 For loading the model.
 
 ```python
@@ -396,11 +424,12 @@ def llm(prompt):
     response_final = response[0]['generated_text']
     return response_final[len(prompt):].strip()
 ```
+
 ## 2.6 Exploring Open Source LLMs
 
 We had just looked through a few models that are quite popular in the AI community, but there are a lot more open source models on HuggingFace. The question is **"How do we decide which model to choose?"**
 
-The answer to the question is [open_llm_leaderboard](https://huggingface.co/spaces/open-llm-leaderboard/open_llm_leaderboard) on HuggingFace.The Open LLM Leaderboard is a platform that compares and ranks various open-source large language models based on their performance across different tasks,  including tasks related to common sense reasoning, reading comprehension, and mathematical abilities. Based on the tasks, you have an `Average` score which represents a composite measure of the model's performance across all evaluated tasks. Your choice of model can be based on either the overall score or based on the performance against the task. There are multiple tasks available on the leaderboard, but here's a few that includes their respective descriptions as well:
+The answer to the question is [open_llm_leaderboard](https://huggingface.co/spaces/open-llm-leaderboard/open_llm_leaderboard) on HuggingFace.The Open LLM Leaderboard is a platform that compares and ranks various open-source large language models based on their performance across different tasks, including tasks related to common sense reasoning, reading comprehension, and mathematical abilities. Based on the tasks, you have an `Average` score which represents a composite measure of the model's performance across all evaluated tasks. Your choice of model can be based on either the overall score or based on the performance against the task. There are multiple tasks available on the leaderboard, but here's a few that includes their respective descriptions as well:
 
 1. `IFEval` - IFEval is a dataset designed to test a model’s ability to follow explicit instructions, such as “include keyword x” or “use format y.” The focus is on the model’s adherence to formatting instructions rather than the content generated, allowing for the use of strict and rigorous metrics.
 2. `BBH` - Big Bench Hard (BBH) is a subset of 23 challenging tasks from the BigBench dataset to evaluate language models. The tasks use objective metrics, are highly difficult, and have sufficient sample sizes for statistical significance. They include multistep arithmetic, algorithmic reasoning (e.g., boolean expressions, SVG shapes), language understanding (e.g., sarcasm detection, name disambiguation), and world knowledge. BBH performance correlates well with human preferences, providing valuable insights into model capabilities.
@@ -434,8 +463,9 @@ curl -fsSL https://ollama.com/install.sh | sh
 Next, I run the terminal command `ollama start` to initialise and start the `ollama` service on our machine. Now that we have `ollama` running, we can run the command `ollama run phi3` to be able to interact with the model locally. It's so easy to use!
 
 That would be the simplest way to use it, but there are two other methods to implement `ollama`:
+
 1. Replacement for `OpenAI` API
-2. Running `ollama` in docker 
+2. Running `ollama` in docker
 
 ### Replacement for OpenAI API
 
@@ -468,7 +498,7 @@ def llm(prompt):
         model='phi3',
         messages=[{"role": "user", "content": prompt}]
     )
-    
+
     return response.choices[0].message.content
 ```
 
@@ -481,9 +511,11 @@ Please find the implementation in a jupyter notebook [here](https://github.com/p
 Another interesting way of running `ollama` is using `docker`. Some people prefer using docker as it is self-contained although `ollama` only has one executable.
 
 command for running `ollama` container on `docker`.
+
 ```bash
 docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama
 ```
+
 Lets break down the command:
 `docker run` : start a new container from image, if image is not available it would be pulled from `dockerhub`
 `-d` : run container as daemon or detached mode, meaning it runs in the background
@@ -495,9 +527,11 @@ Lets break down the command:
 Now, that we have the `ollama` server running, we want to use the `client` to be able to ask questions.
 
 The command for doing so is (i.e. running the command inside the container):
+
 ```bash
 docker exec -it ollama ollama run phi3
 ```
+
 `docker exec` : runnning a command inside a container
 `it` : run the command in interactive terminal
 `ollama` : name of the container
@@ -516,18 +550,20 @@ FROM ./vicuna-33b.Q4_0.gguf
 ```
 
 2. Create the model in Ollama
+
 ```bash
 ollama create example -f Modelfile
 ```
 
 3. Run the model
+
 ```bash
 ollama run example
 ```
 
 ## 2.8 Ollama & Phi3 + Elastic in Docker-Compose
 
-In this section, we will be building on top of the previous section where we had run `ollama` locally, ran it as a replacement for `openai` API as well as running it from a docker container. But that was very specific to only running `ollama` LLM models. However, recall that in our RAG architecture we had another component other than the LLM model, our knowledge base. 
+In this section, we will be building on top of the previous section where we had run `ollama` locally, ran it as a replacement for `openai` API as well as running it from a docker container. But that was very specific to only running `ollama` LLM models. However, recall that in our RAG architecture we had another component other than the LLM model, our knowledge base.
 
 So far for the purpose of illustration we had implemented the toy search engine using `minsearch.py` library for ease of running it in `saturn cloud`. And we had mentioned in the previous module that this was to be replaced by `elasticsearch` - a powerful open-source search and analytics engine, as this makes the architecture more production ready.
 
@@ -538,12 +574,14 @@ And the best approach for running the models together is using docker. So let's 
 A docker-compose `YAML` file is nothing more than a `requirements.txt` file when setting up a virtual environment for a new project. But instead of installing dependencies, you are defining the services of the container applications you would like to spin up. In our case, the two services are `elasticsearch` and `ollama`.
 
 And defining our services is essentially the reformatting of docker commands that we had run previously. Let's take the `ollama` docker commands as an example. We had the following 2 commands:
+
 ```bash
 1. docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama
 2. docker exec -it ollama ollama run phi3
 ```
 
 These commands are to firstly spin up and run the `ollama` container from its docker image, followed by runnning the `phi3` model from inside the container. So if I had to convert to a docker-compose file, the same command would look like the following in the `YAML` file:
+
 ```yaml
 version: '3.8'
 
@@ -565,11 +603,12 @@ volumes:
     name: ollama
 ```
 
-Notice that they are almost the same. `init: true` ensures that the container uses an init process, which can help with process management and zombie process reaping. And `command` is to specify to start the `ollama` server in the background, wait for 10 seconds before running the `phi3` model. 
+Notice that they are almost the same. `init: true` ensures that the container uses an init process, which can help with process management and zombie process reaping. And `command` is to specify to start the `ollama` server in the background, wait for 10 seconds before running the `phi3` model.
 
 > Note: A new container needs to be created using this docker-compose file with the command tweaked according to the model that we want to use.
 
 Similary, if we were to convert the command that we used to run `elasticsearch` with docker:
+
 ```bash
 docker run -it \
     --rm \
@@ -582,6 +621,7 @@ docker run -it \
 ```
 
 It would look something like this:
+
 ```yaml
 services:
   elasticsearch:
@@ -595,17 +635,18 @@ services:
       - "9300:9300"
 ```
 
-So combining both together would give you something like thie [docker-compose.yaml](https://github.com/peterchettiar/LLMzoomcamp_2024/blob/main/Module-2-open-source-llm/docker-compose.yaml) file. 
+So combining both together would give you something like thie [docker-compose.yaml](https://github.com/peterchettiar/LLMzoomcamp_2024/blob/main/Module-2-open-source-llm/docker-compose.yaml) file.
 
 ### Modifying module 1 notebook
 
 Now that we have the `elasticsearch` and `ollama` services up and running with the `docker-compose up -d` command, we can now proceed with the changes in our [rag_intro.ipynb](https://github.com/peterchettiar/LLMzoomcamp_2024/blob/main/Module-1-introduction/rag_intro.ipynb) Jupyter Notebook from Module 1 to replace `minsearch` with `elasticsearch` as well as using the `openai` framework to run `ollama` models.
 
 1. Implementing `elasticsearch` - connect to `elasticsearch` instance running on `localhost` on port `9200`; a dictionary that defines the settings and mappings of the index; and creating the index using the `documents` JSON file:
+
 ```python
 # connecting to the es client and defining our index
 
-es_client = Elasticsearch("http://localhost:9200") 
+es_client = Elasticsearch("http://localhost:9200")
 
 index_settings = {
     "settings": {
@@ -617,7 +658,7 @@ index_settings = {
             "text": {"type": "text"},
             "section": {"type": "text"},
             "question": {"type": "text"},
-            "course": {"type": "keyword"} 
+            "course": {"type": "keyword"}
         }
     }
 }
@@ -630,7 +671,9 @@ if es_client.indices.exists(index="course-faqs"):
 
 es_client.indices.create(index=index_name, body=index_settings)
 ```
+
 There is also a possibility you might run into `ConnectionTimeout: Connection timed out` error. The problem is to do with the disk usage in total. The solution is to manually set the watermarks after the nodes have started. Run the following 2 commands:
+
 ```bash
 curl -XPUT -H "Content-Type: application/json" http://localhost:9200/_cluster/settings -d '{ "transient": { "cluster.routing.allocation.disk.threshold_enabled": false } }'
 curl -XPUT -H "Content-Type: application/json" http://localhost:9200/_all/_settings -d '{"index.blocks.read_only_allow_delete": null}'
@@ -646,7 +689,9 @@ client = OpenAI(
     api_key='ollama',
 )
 ```
+
 Next, we need to modify the `llm` function as follows - please note that the model used was `gemma2:2b`:
+
 ```python
 def llm(prompt):
 
@@ -667,7 +712,6 @@ rm -rf /root/.ollama/cache/*
 
 Please find the complete notebook which includes `elasticsearch` query function [here](https://github.com/peterchettiar/LLMzoomcamp_2024/blob/main/Module-2-open-source-llm/rag_elasticsearch.ipynb).
 
-
 ## 2.9 Creating a Streamlit UI
 
 Plan for deploying Streamlit:
@@ -676,7 +720,7 @@ Plan for deploying Streamlit:
 
 2. Inside the folder, we want to create a python script that runs streamlit in the main function with the elasticsearch, prompt, llm defined outside the main function. The functions defined outside of main should be encapsulated in the rag function, that would be subsequently called into main as well.
 
-3. 
+3. Introduction to Object Serialization | `python -m streamlit run app.py`
 
 4. Next we would want to create a dockerfile for streamlit to build our custom image from it - our python script would be included here as we want to run the script inside the container after we build the image
 
