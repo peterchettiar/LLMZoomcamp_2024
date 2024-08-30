@@ -41,7 +41,7 @@ Vector search is a method of finding similar items in a dataset by comparing the
 
 The idea behind the `vector search` concept is to basically to convert our unstructured data like text documents or images into a numerical representation (your vector embedding) and subsequently be stored in a multi-dimensional vector space. This way its easy for the machine to learn and understand, as well as yield more relevant results when performing semantic searches.
 
-Using the same cat example as before, if you provide a cat image, this would be converted to a vector embedding and `vector search` would return the vector embedding closest to our query vector embedding based on the euclidean distance in our vector database. And because we have a `index` structure that often includes a distance metric, the execution time is much shorter for the search process as opposed to having to calculate the distance for each vector embedding in our vector database.
+Using the same cat example as before, if you provide a cat image, this would be converted to a vector embedding and `vector search` would return the vector embedding closest to our query vector embedding based on the euclidean distance (i.e. straight line distance between two vectors in a multidimensional space) or cosine similarity (i.e. cosine of the angle between two vectors - range from -1 to 1 with 1 being an identical vector) in our vector database. And because we have a `index` structure that often includes a distance metric, the execution time is much shorter for the search process as opposed to having to calculate the distance for each vector embedding in our vector database.
 
 So you maybe wondering what is the purpose of all this, its simply to enable the following use cases:
 1. Long-term memory for LLMs
@@ -66,7 +66,7 @@ So the way to convert unstructured data to a `vector embedding` is through the u
 | User embeddings | Represent users in a system or platform as vectors, capturing user preferences, behaviors, and characteristics. | Used in recommendation systems, personalized marketing, user segmentation |
 | Product embeddings | Represent products in ecommerce or recommendation systems as vectors, capturing a product's attributes, features, and other semantic information. | Used to compare, recommend, and analyze products based on vector representations |
 
-The following is a simple guideline for creating a `vectore embedding`:
+The following is a simple guideline for creating a `vector embedding`:
 
 | Step | Description |
 |------|-------------|
@@ -77,6 +77,12 @@ The following is a simple guideline for creating a `vectore embedding`:
 | 5. Vector Generation | As the model learns, it generates numerical vectors (embeddings) representing the meaning or characteristics of each data point. |
 | 6. Quality Assessment | Evaluate the quality and effectiveness of the embeddings by measuring their performance on specific tasks or using human evaluation. |
 | 7. Implementation | Once satisfied with the embeddings' performance, use them for analyzing and processing your data sets. |
+
+Now moving on to the concept of `indexing`. As mentioned prviously, this is another important process to enable fast retrieval for `vector search`. There are a few types of indexing methods such as:
+1. Flat index (brute force) - compares the query with every single vector stored in the database
+2. Approximate Nearest Neighbour (ANN) Methods - as the name suggests, using algorithms to find the close vectors that are similar or approximate to the query vector
+3. Tree-Based indexing - use a tree-like structure to partition the vector database thereby eliminating large portions of data during search
+4. Graph-Based indexing - constructs a graph like structure where each node represents a vector, and edges connect nodes based on proximity (similarity)
 
 ### Vector Search Data Workflow
 
