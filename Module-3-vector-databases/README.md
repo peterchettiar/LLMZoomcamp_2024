@@ -23,7 +23,7 @@ Therefore, there was a need to come up with a more viable solution to represent 
 
 ### Vector Search
 
-Vector search is a method of finding similar items in a dataset by comparing their vector representations (a.k.a vector embeddings, which will be discussed in the next section). Unlike traditional keyword-based search, which relies on exact matches, vector search uses mathematical representations of data to find items that are similar in meaning or context. This is a high-level summary and we will look a little deeper into this topic but at this stage I think it would be prudent to make a comparison between `vector search` and `vector database`. Essentially they refer to the same thing, a process for converting unstructured data into `vector embeddings` and storing them as well as indexing the numeric representations for fast retrieval, but I guess the context in which the terms are used could be different. Hence, please find the following differences:
+Vector search is a method of finding similar items in a dataset by comparing their vector representations (a.k.a `vector embeddings`, which will be discussed in the next section). Unlike traditional keyword-based search, which relies on exact matches, vector search uses mathematical representations of data to find items that are similar in meaning or context. This is a high-level summary and we will look a little deeper into this topic but at this stage I think it would be prudent to make a comparison between `vector search` and `vector database`. Essentially they refer to the same thing, a process for converting unstructured data into `vector embeddings` and storing them as well as indexing the numeric representations for fast retrieval, but I guess the context in which the terms are used could be different. Hence, please find the following differences:
 
 | Aspect | Vector Search | Vector Database |
 |--------|---------------|-----------------|
@@ -41,9 +41,31 @@ Vector search is a method of finding similar items in a dataset by comparing the
 
 The idea behind the `vector search` concept is to basically to convert our unstructured data like text documents or images into a numerical representation (your vector embedding) and subsequently be stored in a multi-dimensional vector space. This way its easy for the machine to learn and understand, as well as yield more relevant results when performing semantic searches.
 
-Using the same cat example as before, if you provide a cat image, this would be converted to a vector embedding and `vector search` would return the vector embedding closest to our query vector embedding based on the euclidean distance in our vector database. And because we have a `index` structure that often includes a distance metric, the execution time is much shorter as opposed to having to calculate the distance for each vector embedding in our vector database.
+Using the same cat example as before, if you provide a cat image, this would be converted to a vector embedding and `vector search` would return the vector embedding closest to our query vector embedding based on the euclidean distance in our vector database. And because we have a `index` structure that often includes a distance metric, the execution time is much shorter for the search process as opposed to having to calculate the distance for each vector embedding in our vector database.
+
+So you maybe wondering what is the purpose of all this, its simply to enable the following use cases:
+1. Long-term memory for LLMs
+2. Semantic search; search based on the meaning or context
+3. Similarity search for text, images, audio, or video data
+4. Recommendation engine
 
 ### Vector Embeddings and Indexing
 
+At this point we should already have a working knowledge of `vector embeddings` but the officical definition by [elastic](https://www.elastic.co/what-is/vector-embedding) is:
+
+_They are a way to convert words and sentences and other data into numbers that capture their meanings and relationships. They represent different data types as points in a multidimensional space, where similar data points are clustered closer together. These numerical representations help machines understand and process this data more effectively._
+
+So the way to convert unstructured data to a `vector embedding` is through the use of ML Models, depending on the type of data you are working with. Following are a few examples of the type of embeddings:
+
+| Type of Embedding | Description | Examples/Techniques |
+|-------------------|-------------|---------------------|
+| Word embeddings | Represent individual words as vectors, capturing semantic relationships and contextual information from large text corpora. | Word2Vec, GloVe, FastText |
+| Sentence embeddings | Represent entire sentences as vectors, capturing the overall meaning and context of the sentences. | Universal Sentence Encoder (USE), SkipThought |
+| Document embeddings | Represent documents (anything from newspaper articles to academic papers) as vectors, capturing the semantic information and context of the entire document. | Doc2Vec, Paragraph Vectors |
+| Image embeddings | Represent images as vectors by capturing different visual features. | Convolutional neural networks (CNNs), ResNet, VGG |
+| User embeddings | Represent users in a system or platform as vectors, capturing user preferences, behaviors, and characteristics. | Used in recommendation systems, personalized marketing, user segmentation |
+| Product embeddings | Represent products in ecommerce or recommendation systems as vectors, capturing a product's attributes, features, and other semantic information. | Used to compare, recommend, and analyze products based on vector representations |
+
 ### Vector Search Data Workflow
 
+![image](https://github.com/user-attachments/assets/5ec81fcd-8361-4db0-a4f7-6103ffca15fc)
