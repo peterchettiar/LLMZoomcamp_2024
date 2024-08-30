@@ -66,6 +66,18 @@ So the way to convert unstructured data to a `vector embedding` is through the u
 | User embeddings | Represent users in a system or platform as vectors, capturing user preferences, behaviors, and characteristics. | Used in recommendation systems, personalized marketing, user segmentation |
 | Product embeddings | Represent products in ecommerce or recommendation systems as vectors, capturing a product's attributes, features, and other semantic information. | Used to compare, recommend, and analyze products based on vector representations |
 
+The following is a simple guideline for creating a `vectore embedding`:
+
+| Step | Description |
+|------|-------------|
+| 1. Data Collection | Gather a large dataset representing the type of data for which you want to create embeddings (e.g., text or images). |
+| 2. Preprocessing | Clean and prepare the data by removing noise, normalizing text, resizing images, or other tasks depending on the data type. |
+| 3. Model Selection | Choose a neural network model that fits your data and goals. |
+| 4. Training | Feed the preprocessed data into the model. The model learns patterns and relationships by adjusting its internal parameters (e.g., associating words that often appear together or recognizing visual features in images). |
+| 5. Vector Generation | As the model learns, it generates numerical vectors (embeddings) representing the meaning or characteristics of each data point. |
+| 6. Quality Assessment | Evaluate the quality and effectiveness of the embeddings by measuring their performance on specific tasks or using human evaluation. |
+| 7. Implementation | Once satisfied with the embeddings' performance, use them for analyzing and processing your data sets. |
+
 ### Vector Search Data Workflow
 
 ![image](https://github.com/user-attachments/assets/5ec81fcd-8361-4db0-a4f7-6103ffca15fc)
