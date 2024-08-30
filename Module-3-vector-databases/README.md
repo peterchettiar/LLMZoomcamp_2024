@@ -3,8 +3,9 @@
 ### Table of contents
 
 - [3.1 Introduction to Vector Databases](#31-introduction-to-vector-databases)
-  - [Vector Search and Embeddings](##vector-search-and-embeddings)
-  - 
+  - [Vector Search](#vector-search)
+  - [Vector Embeddings and Indexing](#vector-embeddings-and-indexing)
+  - [Vector Search Data and Workflow](#vector-search-data-workflow)
 
 ## 3.1 Introduction to Vector Databases
 
@@ -20,9 +21,9 @@ Therefore, there was a need to come up with a more viable solution to represent 
 
 > Please note that the terms vector search and vector database are related concepts in the field of data management and information retrieval, but they have distinct meanings.
 
-### Vector Search and Embeddings
+### Vector Search
 
-Vector search is a method of finding similar items in a dataset by comparing their vector representations. Unlike traditional keyword-based search, which relies on exact matches, vector search uses mathematical representations of data to find items that are similar in meaning or context.
+Vector search is a method of finding similar items in a dataset by comparing their vector representations (a.k.a vector embeddings, which will be discussed in the next section). Unlike traditional keyword-based search, which relies on exact matches, vector search uses mathematical representations of data to find items that are similar in meaning or context. This is a high-level summary and we will look a little deeper into this topic but at this stage I think it would be prudent to make a comparison between `vector search` and `vector database`. Essentially they refer to the same thing, a process for converting unstructured data into `vector embeddings` and storing them as well as indexing the numeric representations for fast retrieval, but I guess the context in which the terms are used could be different. Hence, please find the following differences:
 
 | Aspect | Vector Search | Vector Database |
 |--------|---------------|-----------------|
@@ -38,4 +39,11 @@ Vector search is a method of finding similar items in a dataset by comparing the
 | Scalability | Depends on implementation | Often designed for large-scale operations |
 | Performance | Varies based on implementation | Generally optimized for high-performance vector operations |
 
-### Why use vector search?
+The idea behind the `vector search` concept is to basically to convert our unstructured data like text documents or images into a numerical representation (your vector embedding) and subsequently be stored in a multi-dimensional vector space. This way its easy for the machine to learn and understand, as well as yield more relevant results when performing semantic searches.
+
+Using the same cat example as before, if you provide a cat image, this would be converted to a vector embedding and `vector search` would return the vector embedding closest to our query vector embedding based on the euclidean distance in our vector database. And because we have a `index` structure that often includes a distance metric, the execution time is much shorter as opposed to having to calculate the distance for each vector embedding in our vector database.
+
+### Vector Embeddings and Indexing
+
+### Vector Search Data Workflow
+
