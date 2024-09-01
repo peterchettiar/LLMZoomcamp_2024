@@ -5,6 +5,7 @@
 - [3.1 Introduction to Vector Databases](#31-introduction-to-vector-databases)
   - [Vector Search](#vector-search)
   - [Vector Embeddings and Indexing](#vector-embeddings-and-indexing)
+  - [Approximate Nearest Neighbour (ANN)](#approximate-nearest-neighour-(ann))
   - [Vector Search Data and Workflow](#vector-search-data-workflow)
 
 ## 3.1 Introduction to Vector Databases
@@ -78,11 +79,17 @@ The following is a simple guideline for creating a `vector embedding`:
 | 6. Quality Assessment | Evaluate the quality and effectiveness of the embeddings by measuring their performance on specific tasks or using human evaluation. |
 | 7. Implementation | Once satisfied with the embeddings' performance, use them for analyzing and processing your data sets. |
 
-Now moving on to the concept of `indexing`. As mentioned prviously, this is another important process to enable fast retrieval for `vector search`. There are a few types of indexing methods such as:
+Now moving on to the concept of `indexing`. As mentioned previously, this is another important process to enable fast retrieval for `vector search`. There are a few types of indexing methods such as:
 1. Flat index (brute force) - compares the query with every single vector stored in the database
 2. Approximate Nearest Neighbour (ANN) Methods - as the name suggests, using algorithms to find the close vectors that are similar or approximate to the query vector
 3. Tree-Based indexing - use a tree-like structure to partition the vector database thereby eliminating large portions of data during search
 4. Graph-Based indexing - constructs a graph like structure where each node represents a vector, and edges connect nodes based on proximity (similarity)
+
+### Approximate Nearest Neighbour (ANN)
+
+Since we are using `elasticsearch` as our choice of search engine, we can take a deeper look into their method for indexing - ANN algoritms.
+
+
 
 ### Vector Search Data Workflow
 
