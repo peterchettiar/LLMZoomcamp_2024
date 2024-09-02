@@ -5,7 +5,7 @@
 - [3.1 Introduction to Vector Databases](#31-introduction-to-vector-databases)
   - [Vector Search](#vector-search)
   - [Vector Embeddings and Indexing](#vector-embeddings-and-indexing)
-  - [Approximate Nearest Neighbour (ANN)](#approximate-nearest-neighour-(ann))
+  - [Approximate Nearest Neighbour (ANN)](#approximate-nearest-neighbour-ann)
   - [Vector Search Data and Workflow](#vector-search-data-workflow)
 
 ## 3.1 Introduction to Vector Databases
@@ -105,4 +105,12 @@ Let's take a closer look into LSH to get a deeper understanding of how ANNs work
 
 ### Vector Search Data Workflow
 
+To summarise what we have discussed, the below diagram visually describes the end-to-end workflow of `vector search`
+
 ![image](https://github.com/user-attachments/assets/5ec81fcd-8361-4db0-a4f7-6103ffca15fc)
+
+So starting from the left-hand side of the image, we have the unstructured data sources where data is being pulled and converted into `vector embeddings` using ML models. Again, the data type determines the ML model being deployed for ths transformation. For example, to convert word to word embeddings we use Word2Vec. 
+
+After the transformation, these `vector embeddings` undergo an indexing process using Approximate Nearest Neighbours (ANNs) such as Local-Sensitivity Hashing (LSH) where `vector embedding` are grouped with other `vector embeddings` with high similarity scores.
+
+On the other side the query goes through a similar process where the query is converted into an embedding as well as undergoing an indexing process. Naturally, the query index will enable the search of similar vector embedding indices based on the similarity score with the query index and finally providing the results. 
