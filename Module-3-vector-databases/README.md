@@ -89,7 +89,19 @@ Now moving on to the concept of `indexing`. As mentioned previously, this is ano
 
 Since we are using `elasticsearch` as our choice of search engine, we can take a deeper look into their method for indexing - ANN algoritms.
 
+Approximate Nearest Neighbour (ANN) is an algorithm that finds a data point in a data set that is very close to the query point, but not necessarily the absolute closest one. This is an upgrade from traditional NN algorthms that searches through all the data to find the perfect match, which can be time consuming as well as computationally expensive given that data sources gets larger each year. Hence, ANNs are game changers as they use intelligent shortcuts and data structures to efficiently navigate the search space. So instead of taking up huge amounts of time and resources, it can identify data points with much less effort that are close enough to be useful in most practical scenarios.
 
+Now that we know what ANNs are as well as their purpose of building vector indexes, we can proceed to understand how they work. Generally how these algorithms work is firstly a **dimensionality reduction** technique being deployed followed by a **defined metric** to calculate the similarity between the query vector and all other vectors in the table.
+
+There are types of ANNs, to name a few:
+1. KD-trees
+2. Local-sensitivity hashing (LSH)
+3. Annoy
+4. Linear scan algorithm
+5. Inverted file (IVF) indexes
+6. Hierarchical Navigational Small Worlds (HNSW)
+
+Let's take a closer look into LSH to get a deeper understanding of how ANNs work. LSH builds the index in the vector database by using a hashing function. Vector embeddings that are nearby each other are hashed to the same bucket. We can then store all these similar vectors in a single table or bucket. When a query vector is provided, its nearest neighbours can be found by hashing the query vector, and then computing the similartiy metric for all the vectors in the table for all other vectors that hashed to the same value. This indexing strategy optimizes for speed and finding.
 
 ### Vector Search Data Workflow
 
