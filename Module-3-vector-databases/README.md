@@ -127,6 +127,173 @@ In this chapter, we will explore how to build a semantic search engine using Ela
 
 **Why use Elasticsearch for Semantic Search?**
 
-* Scalability: Elasticsearch can handle large volumes of data and high query loads.
-* Flexibility: It supports various types of data, including text, numbers, and geospatial data.
-* Advanced Features: Elasticsearch offers advanced search features like full-text search, filtering, and aggregations.
+* _Scalability_: Elasticsearch can handle large volumes of data and high query loads.
+* _Flexibility_: It supports various types of data, including text, numbers, and geospatial data.
+* _Advanced Features_: Elasticsearch offers advanced search features like full-text search, filtering, and aggregations.
+
+### Understanding Documents and Indexes in Elasticsearch
+
+Elasticsearch is a distributed search engine that stores data in the form of documents. Two very important concepts in Elasticsearch are documents and indexes.
+
+**Documents**
+
+A document is a collection of fields with their associated values. Each document is a JSON object that contains data in a structured format. For example, a document representing a book might contain fields like title, author, and publication date.
+
+**Indexes**
+
+An index is a collection of documents that is stored in a highly optimized format designed to perform efficient searches. Indexes are similar to tables in a relational database, but they are more flexible and can store complex data structures.
+
+To work with Elasticsearch, you need to organize your data into documents and then add all your documents into an index. This allows Elasticsearch to efficiently search and retrieve relevant documents based on the search queries.
+
+### Steps to run Semantic Search using ElasticSearch
+
+**Step 1: Setting up the environment**
+
+The process involves setting up a Docker container, preparing data, generating embeddings with a pre-trained model, and indexing these embeddings into Elasticsearch.
+
+First, check if Docker is running. If not, use a command from a previous module to start a Docker container for Elasticsearch:
+```bash
+docker run -it \
+    --rm \
+    --name elasticsearch \
+    -p 9200:9200 \
+    -p 9300:9300 \
+    -e "discovery.type=single-node" \
+    -e "xpack.security.enabled=false" \
+    docker.elastic.co/elasticsearch/elasticsearch:8.4.3
+```
+
+I used the [docker-compose](https://github.com/peterchettiar/LLMzoomcamp_2024/blob/main/Module-2-open-source-llm/docker-compose.yaml) file from Week 2 but made a slight tweak by adding a `volume` flag. Instead of using the default directory in codespaces, I remounted onto a `/tmps` folder on the host machine so that there is more disk space available. The additional item is as follows:
+```yaml
+volumes:
+  - /tmp/elasticsearch_data:/usr/share/elasticsearch/data
+```
+So to break it down, `/tmp/elasticsearch_data` is the data directory in the host machine and `/usr/share/elasticsearch/data` is the default directory inside the Elasticsearch container. Since, we made these changes we need to re-build the image using `docker-compose up --build -d` to make sure that the new changes are applied.
+
+There may be also a possibility that the `elasticsearch` container exits unexpectedly. It's good practice to check the logs by running `docker logs elasticsearch` to see what the errors are. Chances are, it may have exited unexpectedly due to the changes we made when mounting volumes. The reason for this is that we do not have the permissions to access these folders by default. Hence, we need to change this by running the command `sudo chown -R 1000:1000 /tmp/elasticsearch_data`. Basically what we are doing here is that we are changing the ownership to all the files and subdirecotries recusrsicely to a new user and group which in our case is both 1000, this is referring to the user in the `elasticsearch` container.
+
+> Note: Please make sure to have the container running before proceeding.
+
+**Step 2: Data Loading and Preprocessing**
+
+In this step, we will load the `documents.json` file and preprocess it to flatten the hierarchy, making it suitable for Elasticsearch. The `documents.json` file contains a list of courses, each with a list of documents. We will extract each document and add a `course` field, indicating which course it belongs to.
+
+**Step 3: Embeddings - Sentence Transformers**
+
+To perform a semantic search, we need to convert our documents into dense vectors (embeddings) that capture the semantic meaning of the text. We will use a pre-trained model from the Sentence Transformers library to generate these embeddings. These embeddings are then indexed into Elasticsearch. These embeddings enable us to perform semantic search, where the goal is to find text that is contextually similar to a given query.
+
+The `text` and `question` fields are the actual data fields containing the primary information, whereas other fields like `section` and `course` are more categorical and less informative for the purpose of creating meaningful embeddings.
+
+* Install the` sentence_transformers` library.
+* Load the pre-trained model and use it to generate embeddings for our documents.
+
+```python
+# Load a pretrained sentence transformer model
+
+model = SentenceTransformer("all-mpnet-base-v2") # best pretrained model in their library
+
+documents = [doc.update({'text_vector': model.encode(doc['text']).tolist()}) or doc for doc in documents]
+```
+Pretty much what we did here was to convert the `text` field into an embedding and creating a new key called `text_vector` for each `doc`
+
+**Step 4: Connecting to ElasticSearch**
+
+In this step, we will set up a connection to an Elasticsearch instance. Make sure you have Elasticsearch running.
+
+```python
+# establishing the connection with ElasticSearch
+
+es_client = Elasticsearch("http://localhost:9200")
+
+es_client.info()
+```
+**Step 5: Create Mappings and Index**
+
+We will define the mappings and create the index in Elasticsearch, where the generated embeddings will also be stored.
+
+Mapping is specifying how documents and their fields are structured and indexed in Elasticsearch. Each document is composed of various fields, each assigned a specific data type.
+
+Similar to a database schema, mapping outlines the structure of documents, detailing the fields, their data types (e.g., string, integer, or date), and how these fields should be indexed and stored.
+
+By defining documents and indices, we ensure that an index acts like a table of contents in a book, facilitating efficient searches.
+
+```python
+index_settings = {
+    "settings": {
+        "number_of_shards": 1,
+        "number_of_replicas": 0
+    },
+    "mappings": {
+        "properties": {
+            "text": {"type": "text"},
+            "section": {"type": "text"},
+            "question": {"type": "text"},
+            "course": {"type": "keyword"},
+            "text_vector": {"type": "dense_vector", "dims": 768, "index": True, "similarity": "cosine"},
+        }
+    }
+}
+
+index_name = "course-questions"
+
+# Delete the index if it exists
+es_client.indices.delete(index=index_name, ignore_unavailable=True)
+
+# Create the index
+es_client.indices.create(index=index_name, body=index_settings)
+```
+
+**Step 6: Adding the documents to the Index**
+
+We then add the preprocessed documents along with their embeddings to the Elasticsearch index. This allows Elasticsearch to store and manage the documents efficiently, enabling fast and accurate search queries.
+
+I used the `bulk` method instead of the conventional `index` method, just for exploratory purposes:
+```python
+# lastly to populate the index with our documents list using the bulk method instead of the conventional create method
+
+index = {"index": {
+    "_index":index_name
+}}
+
+operations =  [item for doc in documents for item in (index, doc)]
+
+resp = es_client.bulk(operations = operations, timeout="120s")
+```
+**Step 7: Performing Semantic Search with Filter**
+
+Based on our workflow diagram at the start of the section, the other side of the coin is the user query. This too needs to undergo a transformation process to be converted into a vector embedding, followed by defining the parameters of the query before running the `search` method.
+
+1. Let's transform our query into an embedding.
+```python
+# Here we will use the search term that was used in the course - again we need to convert our search term into an embedding
+
+search_term = 'Windows or Mac?'
+
+vector_search_term = model.encode(search_term)
+```
+2. Define our query parameters.
+```python
+# we need to define the parameters of our query, that includes our search term vector as well
+
+knn_query = {
+    "field" : "text_vector",  # the field in which the search term should be queried
+    "query_vector" : vector_search_term,  # the embedding of our search term
+    "k" : 5,  # the number of nearest documents to be retrieved that matches the search term 
+    "num_candidates" : 10000 # group of documents the search is going to look into
+}
+```
+3. Running a search query using a filter.
+```python
+# running our semantic search with a filter in place - `match` is used as a filter field
+
+response = es_client.search(
+    index=index_name,
+    query={
+        "match" : {"section": "General course-related questions"},
+    },
+    knn=knn_query,
+    size=5
+)
+```
+
+For the full notebook of the example we looked through, please click [here](https://github.com/peterchettiar/LLMzoomcamp_2024/blob/main/Module-3-vector-databases/semantic_search_example.ipynb).
