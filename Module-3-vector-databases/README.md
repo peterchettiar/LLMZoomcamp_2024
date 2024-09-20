@@ -7,6 +7,10 @@
   - [Vector Embeddings and Indexing](#vector-embeddings-and-indexing)
   - [Approximate Nearest Neighbour (ANN)](#approximate-nearest-neighbour-ann)
   - [Vector Search Data and Workflow](#vector-search-data-workflow)
+- [3.2 Semantic Search Engine with ElasticSearch](#32-semantic-search-engine-with-elasticsearch)
+  - [Introduction](#introduction)
+  - [Understanding Documents and Indexes in Elasticsearch](#understanding-documents-and-indexes-in-elasticsearch)
+  - [Steps to run Semantic Search using ElasticSearch](#steps-to-run-semantic-search-using-elasticsearch)
 
 ## 3.1 Introduction to Vector Databases
 
