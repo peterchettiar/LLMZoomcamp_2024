@@ -10,7 +10,7 @@
 
 ## 3.1 Introduction to Vector Databases
 
-In the evolving landscape of data management, vector databases have emerged as a critical solution for handling vast and diverse datasets (examples of unstructured data that make up to more that 80% of the data being generated today - social media posts, images, videos, audio). Unlike traditional databases, which are limited to structured data, vector databases excel in managing unstructured data and providing relevant results based on context.
+In the evolving landscape of data management, vector databases have emerged as a critical solution for handling vast and diverse datasets (examples of unstructured data that make up to more than 80% of the data being generated today - social media posts, images, videos, audio). Unlike traditional databases, which are limited to structured data, vector databases excel in managing unstructured data and providing relevant results based on context.
 
 > Note: A vector database indexes and stores vector embeddings for fast retrieval and similarity search.
 
@@ -24,7 +24,7 @@ Therefore, there was a need to come up with a more viable solution to represent 
 
 ### Vector Search
 
-Vector search is a method of finding similar items in a dataset by comparing their vector representations (a.k.a `vector embeddings`, which will be discussed in the next section). Unlike traditional keyword-based search, which relies on exact matches, vector search uses mathematical representations of data to find items that are similar in meaning or context. This is a high-level summary and we will look a little deeper into this topic but at this stage I think it would be prudent to make a comparison between `vector search` and `vector database`. Essentially they refer to the same thing, a process for converting unstructured data into `vector embeddings` and storing them as well as indexing the numeric representations for fast retrieval, but I guess the context in which the terms are used could be different. Hence, please find the following differences:
+Vector search is a method of finding similar items in a dataset by comparing their vector representations (a.k.a `vector embeddings`, which will be discussed in the next section). Unlike traditional keyword-based search, which relies on exact matches, vector search uses mathematical representations of data to find items that are similar in meaning or context. This is a high-level summary and we will look a little deeper into this topic but at this stage, I think it would be prudent to make a comparison between `vector search` and `vector database`. Essentially they refer to the same thing, a process for converting unstructured data into `vector embeddings` and storing them as well as indexing the numeric representations for fast retrieval, but I guess the context in which the terms are used could be different. Hence, please find the following differences:
 
 | Aspect           | Vector Search                                                     | Vector Database                                                               |
 | ---------------- | ----------------------------------------------------------------- | ----------------------------------------------------------------------------- |
@@ -40,11 +40,11 @@ Vector search is a method of finding similar items in a dataset by comparing the
 | Scalability      | Depends on implementation                                         | Often designed for large-scale operations                                     |
 | Performance      | Varies based on implementation                                    | Generally optimized for high-performance vector operations                    |
 
-The idea behind the `vector search` concept is to basically to convert our unstructured data like text documents or images into a numerical representation (your vector embedding) and subsequently be stored in a multi-dimensional vector space. This way its easy for the machine to learn and understand, as well as yield more relevant results when performing semantic searches.
+The idea behind the `vector search` concept is to basically convert our unstructured data like text documents or images into a numerical representation (your vector embedding) and subsequently be stored in a multi-dimensional vector space. This way it's easy for the machine to learn and understand, as well as yield more relevant results when performing semantic searches.
 
-Using the same cat example as before, if you provide a cat image, this would be converted to a vector embedding and `vector search` would return the vector embedding closest to our query vector embedding based on the euclidean distance (i.e. straight line distance between two vectors in a multidimensional space) or cosine similarity (i.e. cosine of the angle between two vectors - range from -1 to 1 with 1 being an identical vector) in our vector database. And because we have a `index` structure that often includes a distance metric, the execution time is much shorter for the search process as opposed to having to calculate the distance for each vector embedding in our vector database.
+Using the same cat example as before, if you provide a cat image, this would be converted to a vector embedding, and `vector search` would return the vector embedding closest to our query vector embedding based on the Euclidean distance (i.e. straight line distance between two vectors in a multidimensional space) or cosine similarity (i.e. cosine of the angle between two vectors - range from -1 to 1 with 1 being an identical vector) in our vector database. And because we have an `index` structure that often includes a distance metric, the execution time is much shorter for the search process as opposed to having to calculate the distance for each vector embedding in our vector database.
 
-So you maybe wondering what is the purpose of all this, its simply to enable the following use cases:
+So you may be wondering what the purpose of all this, is simply to enable the following use cases:
 
 1. Long-term memory for LLMs
 2. Semantic search; search based on the meaning or context
@@ -53,9 +53,9 @@ So you maybe wondering what is the purpose of all this, its simply to enable the
 
 ### Vector Embeddings and Indexing
 
-At this point we should already have a working knowledge of `vector embeddings` but the officical definition by [elastic](https://www.elastic.co/what-is/vector-embedding) is:
+At this point we should already have a working knowledge of `vector embeddings` but the official definition by [elastic](https://www.elastic.co/what-is/vector-embedding) is:
 
-_They are a way to convert words and sentences and other data into numbers that capture their meanings and relationships. They represent different data types as points in a multidimensional space, where similar data points are clustered closer together. These numerical representations help machines understand and process this data more effectively._
+_They are a way to convert words, sentences and other data into numbers that capture their meanings and relationships. They represent different data types as points in a multidimensional space, where similar data points are clustered closer together. These numerical representations help machines understand and process this data more effectively._
 
 So the way to convert unstructured data to a `vector embedding` is through the use of ML Models, depending on the type of data you are working with. Following are a few examples of the type of embeddings:
 
@@ -66,7 +66,7 @@ So the way to convert unstructured data to a `vector embedding` is through the u
 | Document embeddings | Represent documents (anything from newspaper articles to academic papers) as vectors, capturing the semantic information and context of the entire document. | Doc2Vec, Paragraph Vectors                                                       |
 | Image embeddings    | Represent images as vectors by capturing different visual features.                                                                                          | Convolutional neural networks (CNNs), ResNet, VGG                                |
 | User embeddings     | Represent users in a system or platform as vectors, capturing user preferences, behaviors, and characteristics.                                              | Used in recommendation systems, personalized marketing, user segmentation        |
-| Product embeddings  | Represent products in ecommerce or recommendation systems as vectors, capturing a product's attributes, features, and other semantic information.            | Used to compare, recommend, and analyze products based on vector representations |
+| Product embeddings  | Represent products in e-commerce or recommendation systems as vectors, capturing a product's attributes, features, and other semantic information.            | Used to compare, recommend, and analyze products based on vector representations |
 
 The following is a simple guideline for creating a `vector embedding`:
 
@@ -84,14 +84,14 @@ Now moving on to the concept of `indexing`. As mentioned previously, this is ano
 
 1. Flat index (brute force) - compares the query with every single vector stored in the database
 2. Approximate Nearest Neighbour (ANN) Methods - as the name suggests, using algorithms to find the close vectors that are similar or approximate to the query vector
-3. Tree-Based indexing - use a tree-like structure to partition the vector database thereby eliminating large portions of data during search
-4. Graph-Based indexing - constructs a graph like structure where each node represents a vector, and edges connect nodes based on proximity (similarity)
+3. Tree-Based indexing - use a tree-like structure to partition the vector database thereby eliminating large portions of data during the search
+4. Graph-based indexing - constructs a graph-like structure where each node represents a vector, and edges connect nodes based on proximity (similarity)
 
 ### Approximate Nearest Neighbour (ANN)
 
-Since we are using `elasticsearch` as our choice of search engine, we can take a deeper look into their method for indexing - ANN algoritms.
+Since we are using `elasticsearch` as our choice of search engine, we can take a deeper look into their method for indexing - ANN algorithms.
 
-Approximate Nearest Neighbour (ANN) is an algorithm that finds a data point in a data set that is very close to the query point, but not necessarily the absolute closest one. This is an upgrade from traditional NN algorthms that searches through all the data to find the perfect match, which can be time consuming as well as computationally expensive given that data sources gets larger each year. Hence, ANNs are game changers as they use intelligent shortcuts and data structures to efficiently navigate the search space. So instead of taking up huge amounts of time and resources, it can identify data points with much less effort that are close enough to be useful in most practical scenarios.
+Approximate Nearest Neighbour (ANN) is an algorithm that finds a data point in a data set that is very close to the query point, but not necessarily the absolute closest one. This is an upgrade from traditional NN algorithms that search through all the data to find the perfect match, which can be time-consuming as well as computationally expensive given that data sources get larger each year. Hence, ANNs are game changers as they use intelligent shortcuts and data structures to efficiently navigate the search space. So instead of taking up huge amounts of time and resources, it can identify data points with much less effort that are close enough to be useful in most practical scenarios.
 
 Now that we know what ANNs are as well as their purpose of building vector indexes, we can proceed to understand how they work. Generally how these algorithms work is firstly a **dimensionality reduction** technique being deployed followed by a **defined metric** to calculate the similarity between the query vector and all other vectors in the table.
 
@@ -104,7 +104,7 @@ There are types of ANNs, to name a few:
 5. Inverted file (IVF) indexes
 6. Hierarchical Navigational Small Worlds (HNSW)
 
-Let's take a closer look into LSH to get a deeper understanding of how ANNs work. LSH builds the index in the vector database by using a hashing function. Vector embeddings that are nearby each other are hashed to the same bucket. We can then store all these similar vectors in a single table or bucket. When a query vector is provided, its nearest neighbours can be found by hashing the query vector, and then computing the similartiy metric for all the vectors in the table for all other vectors that hashed to the same value. This indexing strategy optimizes for speed and finding.
+Let's take a closer look into LSH to get a deeper understanding of how ANNs work. LSH builds the index in the vector database by using a hashing function. Vector embeddings that are near each other are hashed to the same bucket. We can then store all these similar vectors in a single table or bucket. When a query vector is provided, its nearest neighbours can be found by hashing the query vector, and then computing the similarity metric for all the vectors in the table for all other vectors that hashed to the same value. This indexing strategy optimizes for speed and finding.
 
 ### Vector Search Data Workflow
 
@@ -112,10 +112,21 @@ To summarise what we have discussed, the below diagram visually describes the en
 
 ![image](https://github.com/user-attachments/assets/5ec81fcd-8361-4db0-a4f7-6103ffca15fc)
 
-So starting from the left-hand side of the image, we have the unstructured data sources where data is being pulled and converted into `vector embeddings` using ML models. Again, the data type determines the ML model being deployed for ths transformation. For example, to convert word to word embeddings we use Word2Vec.
+So starting from the left-hand side of the image, we have the unstructured data sources where data is being pulled and converted into `vector embeddings` using ML models. Again, the data type determines the ML model being deployed for this transformation. For example, to convert word-to-word embeddings we use Word2Vec.
 
-After the transformation, these `vector embeddings` undergo an indexing process using Approximate Nearest Neighbours (ANNs) such as Local-Sensitivity Hashing (LSH) where `vector embedding` are grouped with other `vector embeddings` with high similarity scores.
+After the transformation, these `vector embeddings` undergo an indexing process using Approximate Nearest Neighbours (ANNs) such as Local-Sensitivity Hashing (LSH) where `vector embedding` is grouped with other `vector embeddings` with high similarity scores.
 
-On the other side the query goes through a similar process where the query is converted into an embedding as well as undergoing an indexing process. Naturally, the query index will enable the search of similar vector embedding indices based on the similarity score with the query index and finally providing the results.
+On the other side, the query goes through a similar process where the query is converted into an embedding as well as undergoing an indexing process. Naturally, the query index will enable the search of similar vector embedding indices based on the similarity score with the query index and finally provide the results.
 
 ## 3.2 Semantic Search Engine with ElasticSearch
+
+### Introduction
+
+In this chapter, we will explore how to build a semantic search engine using Elasticsearch and Python. Semantic search using Elasticsearch is a specific implementation of vector search that leverages Elasticsearch's capabilities to perform semantic search. It enhances traditional search by understanding the context and meaning behind the search terms, going beyond keyword matching to deliver more relevant results.
+![image](https://github.com/user-attachments/assets/59f079f5-aa30-460d-8fe0-1a939fa7ded5)
+
+**Why use Elasticsearch for Semantic Search?**
+
+* Scalability: Elasticsearch can handle large volumes of data and high query loads.
+* Flexibility: It supports various types of data, including text, numbers, and geospatial data.
+* Advanced Features: Elasticsearch offers advanced search features like full-text search, filtering, and aggregations.
