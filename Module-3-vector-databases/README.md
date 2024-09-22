@@ -320,20 +320,60 @@ For the full notebook of the example we looked through, please click [here](http
 
 Retrieval-Augmented Generation (RAG) frameworks rely on retrieval systems to fetch relevant documents or passages from a knowledge base, playing a critical role in the overall performance of the model. Evaluating the quality of these retrieved results is crucial, as they directly influence the effectiveness of the generated responses. While many metrics exist to assess retrieval performance, it's important to recognize that no single metric fits all scenarios. The choice of evaluation metric should align with the specific goals and approach of the retrieval system in question. Below are some widely used metrics, but this list is by no means exhaustive:
 
-| **Metric**                          | **Description**                                                                                  | **Formula**                                                                                                                                   |
-|-------------------------------------|--------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
-| **Precision at k (P@k)**            | Measures the number of relevant documents in the top k results.                                   | `P@k = (Relevant documents in top k results) ÷ k`                                                                                             |
-| **Recall**                          | Measures the number of relevant documents retrieved out of the total number of relevant documents. | `Recall = (Relevant documents retrieved) ÷ (Total relevant documents)`                                                                          |
-| **Mean Average Precision (MAP)**    | Computes the average precision for each query and then averages these values over all queries.     | `MAP = (1 ÷ ABS(Q)) × Σ(Average Precision(q)) for q in Q`                                                                                          |
-| **Normalized Discounted Cumulative Gain (NDCG)** | Measures the usefulness of a document based on its position in the result list.                   | `NDCG = DCG ÷ IDCG`<br>DCG = Σ((2^rel_i − 1) ÷ log₂(i + 1)) for i = 1 to p <br>IDCG is the ideal DCG, where documents are perfectly ranked.     |
-| **Mean Reciprocal Rank (MRR)**      | Evaluates the rank position of the first relevant document.                                        | `MRR = (1 ÷ ABS(Q)) × Σ(1 ÷ rank_i) for i = 1 to ABS(Q)`                                                                                              |
-| **F1 Score**                        | Harmonic mean of precision and recall.                                                            | `F1 = 2 × (Precision × Recall) ÷ (Precision + Recall) `                                                                                         |
-| **Area Under the ROC Curve (AUC-ROC)** | Measures the ability of the model to distinguish between relevant and non-relevant documents.     | AUC = Area under the ROC curve, which plots true positive rate (TPR) vs. false positive rate (FPR).                                            |
-| **Mean Rank (MR)**                  | The average rank of the first relevant document across all queries.                               | Lower values indicate better performance.                                                                                                     |
-| **Hit Rate (HR) or Recall at k**    | Measures the proportion of queries for which at least one relevant document is retrieved in the top k results. | `HR@k = (Queries with at least one relevant document in top k) ÷ ABS(Q)`                                                             |
-| **Expected Reciprocal Rank (ERR)**  | Measures the probability that a user finds a relevant document at each position in the ranked list. | `ERR = Σ(1 ÷ i) × Π(1 − r_j) × r_i for j = 1 to i−1`<br> where, `r_i` = relevance probability of the document at position i.                            |
+| **Metric**                                       | **Description**                                                                                                | **Formula**                                                                                                                                 |
+| ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Precision at k (P@k)**                         | Measures the number of relevant documents in the top k results.                                                | `P@k = (Relevant documents in top k results) ÷ k`                                                                                           |
+| **Recall**                                       | Measures the number of relevant documents retrieved out of the total number of relevant documents.             | `Recall = (Relevant documents retrieved) ÷ (Total relevant documents)`                                                                      |
+| **Mean Average Precision (MAP)**                 | Computes the average precision for each query and then averages these values over all queries.                 | `MAP = (1 ÷ ABS(Q)) × Σ(Average Precision(q)) for q in Q`                                                                                   |
+| **Normalized Discounted Cumulative Gain (NDCG)** | Measures the usefulness of a document based on its position in the result list.                                | `NDCG = DCG ÷ IDCG`<br>DCG = Σ((2^rel_i − 1) ÷ log₂(i + 1)) for i = 1 to p <br>IDCG is the ideal DCG, where documents are perfectly ranked. |
+| **Mean Reciprocal Rank (MRR)**                   | Evaluates the rank position of the first relevant document.                                                    | `MRR = (1 ÷ ABS(Q)) × Σ(1 ÷ rank_i) for i = 1 to ABS(Q)`                                                                                    |
+| **F1 Score**                                     | Harmonic mean of precision and recall.                                                                         | `F1 = 2 × (Precision × Recall) ÷ (Precision + Recall) `                                                                                     |
+| **Area Under the ROC Curve (AUC-ROC)**           | Measures the ability of the model to distinguish between relevant and non-relevant documents.                  | AUC = Area under the ROC curve, which plots true positive rate (TPR) vs. false positive rate (FPR).                                         |
+| **Mean Rank (MR)**                               | The average rank of the first relevant document across all queries.                                            | Lower values indicate better performance.                                                                                                   |
+| **Hit Rate (HR) or Recall at k**                 | Measures the proportion of queries for which at least one relevant document is retrieved in the top k results. | `HR@k = (Queries with at least one relevant document in top k) ÷ ABS(Q)`                                                                    |
+| **Expected Reciprocal Rank (ERR)**               | Measures the probability that a user finds a relevant document at each position in the ranked list.            | `ERR = Σ(1 ÷ i) × Π(1 − r_j) × r_i for j = 1 to i−1`<br> where, `r_i` = relevance probability of the document at position i.                |
 
 **Evaluation Process:**
-* Create a dataset with queries and corresponding ground truth answers (e.g., relevant documents).
-* For each query, retrieve the top-k documents and compare them against the ground truth.
-* Compute the relevant metrics (e.g., Precision@k, Recall@k, MRR, etc.).
+
+- Create a dataset with queries and corresponding ground truth answers (e.g., relevant documents).
+- For each query, retrieve the top-k documents and compare them against the ground truth.
+- Compute the relevant metrics (e.g., Precision@k, Recall@k, MRR, etc.).
+
+### Generating the Ground Truth Datasets
+
+A critical aspect of evaluation is the use of gold standard data sets. These are ground truth data sets where the relevant documents for each query are known. For instance, given a query like "Can I still join the course?", the relevant documents would be pre-identified. This allows for a clear benchmark to assess the performance of different retrieval methods. An oversimplified illustration of how such a predetermined "Ground-Truth" dataset might look like is as follows:
+
+```text
+Query: I just discovered the course. Can I still join?
+
+Relevant documents: doc1, doc10, doc 11
+
+Query: Windows or Linux?
+
+Relevant documents: doc4
+```
+
+> Note: Typically, for each query there are multiple documents but for the sake of simplicity above is a query-document pair.
+
+**Preparing the documents**
+
+For generating the `Ground Truth Datasets`, there are a few approaches:
+
+1. Human Annotation
+
+In production systems, human annotators and domain experts review documents and queries to identify relevant document-query pairs. Although this method is time-consuming, it results in high-quality data, often referred to as "gold standard" data. Observing user interactions and evaluating system responses also contribute to refining the data set.
+
+2. Using Large Language Models (LLMs)
+
+LLMs can be used to generate user queries based on FAQ records. By creating multiple questions for each FAQ record, we ensure that the generated questions are varied and relevant. This automated approach speeds up the process of creating a ground truth data set and is suitable for initial experiments before deploying a production system.
+
+3. Generating Stable IDs for Documents
+
+To accurately track relevant documents, each document is assigned a unique ID. By maintaining consistent IDs, we can manage changes and updates to the document set without affecting the evaluation process. This helps know which answer goes with which question.
+
+Here are the steps to generate stable IDs:
+
+Step 1: Concatenate Document Attributes: Combine key attributes of the document (e.g., course name, question, and a portion of the text) into a single string. This ensures that the ID is unique to the specific content of the document.
+Step 2: Generate MD5 Hash: Use the MD5 hashing algorithm to create a hash from the concatenated string. MD5 is chosen for its balance of speed and uniqueness.
+Step 3: Extract a Substring of the Hash: To keep the ID concise, extract a substring (e.g., the first 8 characters) of the MD5 hash. This substring serves as the document's unique ID.
+Step 4: Assign the ID to the Document: Attach the generated ID to the document. This ID will be used to reference the document in the evaluation process.
