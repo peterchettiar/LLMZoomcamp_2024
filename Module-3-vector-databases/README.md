@@ -70,7 +70,7 @@ So the way to convert unstructured data to a `vector embedding` is through the u
 | Document embeddings | Represent documents (anything from newspaper articles to academic papers) as vectors, capturing the semantic information and context of the entire document. | Doc2Vec, Paragraph Vectors                                                       |
 | Image embeddings    | Represent images as vectors by capturing different visual features.                                                                                          | Convolutional neural networks (CNNs), ResNet, VGG                                |
 | User embeddings     | Represent users in a system or platform as vectors, capturing user preferences, behaviors, and characteristics.                                              | Used in recommendation systems, personalized marketing, user segmentation        |
-| Product embeddings  | Represent products in e-commerce or recommendation systems as vectors, capturing a product's attributes, features, and other semantic information.            | Used to compare, recommend, and analyze products based on vector representations |
+| Product embeddings  | Represent products in e-commerce or recommendation systems as vectors, capturing a product's attributes, features, and other semantic information.           | Used to compare, recommend, and analyze products based on vector representations |
 
 The following is a simple guideline for creating a `vector embedding`:
 
@@ -131,9 +131,9 @@ In this chapter, we will explore how to build a semantic search engine using Ela
 
 **Why use Elasticsearch for Semantic Search?**
 
-* _Scalability_: Elasticsearch can handle large volumes of data and high query loads.
-* _Flexibility_: It supports various types of data, including text, numbers, and geospatial data.
-* _Advanced Features_: Elasticsearch offers advanced search features like full-text search, filtering, and aggregations.
+- _Scalability_: Elasticsearch can handle large volumes of data and high query loads.
+- _Flexibility_: It supports various types of data, including text, numbers, and geospatial data.
+- _Advanced Features_: Elasticsearch offers advanced search features like full-text search, filtering, and aggregations.
 
 ### Understanding Documents and Indexes in Elasticsearch
 
@@ -156,6 +156,7 @@ To work with Elasticsearch, you need to organize your data into documents and th
 The process involves setting up a Docker container, preparing data, generating embeddings with a pre-trained model, and indexing these embeddings into Elasticsearch.
 
 First, check if Docker is running. If not, use a command from a previous module to start a Docker container for Elasticsearch:
+
 ```bash
 docker run -it \
     --rm \
@@ -168,10 +169,12 @@ docker run -it \
 ```
 
 I used the [docker-compose](https://github.com/peterchettiar/LLMzoomcamp_2024/blob/main/Module-2-open-source-llm/docker-compose.yaml) file from Week 2 but made a slight tweak by adding a `volume` flag. Instead of using the default directory in codespaces, I remounted onto a `/tmps` folder on the host machine so that there is more disk space available. The additional item is as follows:
+
 ```yaml
 volumes:
   - /tmp/elasticsearch_data:/usr/share/elasticsearch/data
 ```
+
 So to break it down, `/tmp/elasticsearch_data` is the data directory in the host machine and `/usr/share/elasticsearch/data` is the default directory inside the Elasticsearch container. Since, we made these changes we need to re-build the image using `docker-compose up --build -d` to make sure that the new changes are applied.
 
 There may be also a possibility that the `elasticsearch` container exits unexpectedly. It's good practice to check the logs by running `docker logs elasticsearch` to see what the errors are. Chances are, it may have exited unexpectedly due to the changes we made when mounting volumes. The reason for this is that we do not have the permissions to access these folders by default. Hence, we need to change this by running the command `sudo chown -R 1000:1000 /tmp/elasticsearch_data`. Basically what we are doing here is that we are changing the ownership to all the files and subdirecotries recusrsicely to a new user and group which in our case is both 1000, this is referring to the user in the `elasticsearch` container.
@@ -188,8 +191,8 @@ To perform a semantic search, we need to convert our documents into dense vector
 
 The `text` and `question` fields are the actual data fields containing the primary information, whereas other fields like `section` and `course` are more categorical and less informative for the purpose of creating meaningful embeddings.
 
-* Install the` sentence_transformers` library.
-* Load the pre-trained model and use it to generate embeddings for our documents.
+- Install the` sentence_transformers` library.
+- Load the pre-trained model and use it to generate embeddings for our documents.
 
 ```python
 # Load a pretrained sentence transformer model
@@ -198,6 +201,7 @@ model = SentenceTransformer("all-mpnet-base-v2") # best pretrained model in thei
 
 documents = [doc.update({'text_vector': model.encode(doc['text']).tolist()}) or doc for doc in documents]
 ```
+
 Pretty much what we did here was to convert the `text` field into an embedding and creating a new key called `text_vector` for each `doc`
 
 **Step 4: Connecting to ElasticSearch**
@@ -211,6 +215,7 @@ es_client = Elasticsearch("http://localhost:9200")
 
 es_client.info()
 ```
+
 **Step 5: Create Mappings and Index**
 
 We will define the mappings and create the index in Elasticsearch, where the generated embeddings will also be stored.
@@ -252,6 +257,7 @@ es_client.indices.create(index=index_name, body=index_settings)
 We then add the preprocessed documents along with their embeddings to the Elasticsearch index. This allows Elasticsearch to store and manage the documents efficiently, enabling fast and accurate search queries.
 
 I used the `bulk` method instead of the conventional `index` method, just for exploratory purposes:
+
 ```python
 # lastly to populate the index with our documents list using the bulk method instead of the conventional create method
 
@@ -263,11 +269,13 @@ operations =  [item for doc in documents for item in (index, doc)]
 
 resp = es_client.bulk(operations = operations, timeout="120s")
 ```
+
 **Step 7: Performing Semantic Search with Filter**
 
 Based on our workflow diagram at the start of the section, the other side of the coin is the user query. This too needs to undergo a transformation process to be converted into a vector embedding, followed by defining the parameters of the query before running the `search` method.
 
 1. Let's transform our query into an embedding.
+
 ```python
 # Here we will use the search term that was used in the course - again we need to convert our search term into an embedding
 
@@ -275,18 +283,22 @@ search_term = 'Windows or Mac?'
 
 vector_search_term = model.encode(search_term)
 ```
+
 2. Define our query parameters.
+
 ```python
 # we need to define the parameters of our query, that includes our search term vector as well
 
 knn_query = {
     "field" : "text_vector",  # the field in which the search term should be queried
     "query_vector" : vector_search_term,  # the embedding of our search term
-    "k" : 5,  # the number of nearest documents to be retrieved that matches the search term 
+    "k" : 5,  # the number of nearest documents to be retrieved that matches the search term
     "num_candidates" : 10000 # group of documents the search is going to look into
 }
 ```
+
 3. Running a search query using a filter.
+
 ```python
 # running our semantic search with a filter in place - `match` is used as a filter field
 
@@ -301,3 +313,22 @@ response = es_client.search(
 ```
 
 For the full notebook of the example we looked through, please click [here](https://github.com/peterchettiar/LLMzoomcamp_2024/blob/main/Module-3-vector-databases/semantic_search_example.ipynb).
+
+## 3.3 Evaluating Retrieval
+
+### Introduction
+
+Retrieval-Augmented Generation (RAG) frameworks rely on retrieval systems to fetch relevant documents or passages from a knowledge base, playing a critical role in the overall performance of the model. Evaluating the quality of these retrieved results is crucial, as they directly influence the effectiveness of the generated responses. While many metrics exist to assess retrieval performance, it's important to recognize that no single metric fits all scenarios. The choice of evaluation metric should align with the specific goals and approach of the retrieval system in question. Below are some widely used metrics, but this list is by no means exhaustive:
+
+| **Metric**                                       | **Description**                                                                                                                                  | **Formula**                                                                                                                                      |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ | --- | ---------------------------------------- | --- | --- |
+| **Precision at k (P@k)**                         | Measures the number of relevant documents in the top k results.                                                                                  | P@k = (Number of relevant documents in top k results) / k                                                                                        |
+| **Recall**                                       | Measures the number of relevant documents retrieved out of the total number of relevant documents.                                               | Recall = (Number of relevant documents retrieved) / (Total number of relevant documents)                                                         |
+| **Mean Average Precision (MAP)**                 | Computes the average precision for each query and then averages these values over all queries.                                                   | MAP = (1 /                                                                                                                                       | Q   | ) \* Σ (Average Precision(q)) for q in Q |
+| **Normalized Discounted Cumulative Gain (NDCG)** | Measures the usefulness, or gain, of a document based on its position in the result list.                                                        | NDCG = DCG / IDCG <br>DCG = Σ ((2^rel_i - 1) / log2(i + 1)) for i = 1 to p <br>IDCG is the ideal DCG, where documents are perfectly ranked.      |
+| **Mean Reciprocal Rank (MRR)**                   | Evaluates the rank position of the first relevant document.                                                                                      | MRR = (1 /                                                                                                                                       | Q   | ) \* Σ (1 / rank_i) for i = 1 to         | Q   |     |
+| **F1 Score**                                     | Harmonic mean of precision and recall.                                                                                                           | F1 = 2 _ (Precision _ Recall) / (Precision + Recall)                                                                                             |
+| **Area Under the ROC Curve (AUC-ROC)**           | Measures the ability of the model to distinguish between relevant and non-relevant documents.                                                    | AUC is the area under the Receiver Operating Characteristic (ROC) curve, which plots true positive rate (TPR) against false positive rate (FPR). |
+| **Mean Rank (MR)**                               | The average rank of the first relevant document across all queries.                                                                              | Lower values indicate better performance.                                                                                                        |
+| **Hit Rate (HR) or Recall at k**                 | Measures the proportion of queries for which at least one relevant document is retrieved in the top k results.                                   | HR@k = (Number of queries with at least one relevant document in top k) /                                                                        | Q   |                                          |
+| **Expected Reciprocal Rank (ERR)**               | Measures the probability that a user finds a relevant document at each position in the ranked list, assuming a cascading model of user behavior. | ERR = Σ (1 / i) _ Π (1 - r_j) _ r_i for j = 1 to i-1, where r_i is the relevance probability of the document at position i.                      |
