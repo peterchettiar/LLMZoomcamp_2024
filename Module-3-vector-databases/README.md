@@ -341,7 +341,7 @@ Retrieval-Augmented Generation (RAG) frameworks rely on retrieval systems to fet
 
 ### Generating the Ground Truth Datasets
 
-A critical aspect of evaluation is the use of gold standard data sets. These are ground truth data sets where the relevant documents for each query are known. For instance, given a query like "Can I still join the course?", the relevant documents would be pre-identified. This allows for a clear benchmark to assess the performance of different retrieval methods. An oversimplified illustration of how such a predetermined "Ground-Truth" dataset might look like is as follows:
+A critical aspect of evaluation is the use of gold-standard data sets. These are ground truth data sets where the relevant documents for each query are known. For instance, the relevant documents would be pre-identified given a query like "Can I still join the course?". This allows for a clear benchmark to assess the performance of different retrieval methods. An oversimplified illustration of how such a predetermined "Ground-Truth" dataset might look is as follows:
 
 ```text
 Query: I just discovered the course. Can I still join?
@@ -353,7 +353,7 @@ Query: Windows or Linux?
 Relevant documents: doc4
 ```
 
-> Note: Typically, for each query there are multiple documents but for the sake of simplicity above is a query-document pair.
+> Note: Typically, for each query, there are multiple documents but for the sake of simplicity above is a query-document pair.
 
 **Preparing the documents**
 
@@ -367,13 +367,83 @@ In production systems, human annotators and domain experts review documents and 
 
 LLMs can be used to generate user queries based on FAQ records. By creating multiple questions for each FAQ record, we ensure that the generated questions are varied and relevant. This automated approach speeds up the process of creating a ground truth data set and is suitable for initial experiments before deploying a production system.
 
-3. Generating Stable IDs for Documents
+Let us proceed with generating the ground truth datasets using `gpt-3.5-turbo`. As usual, after loading and processing our data, we need to generate stable IDs for the documents (i.e. for each record)
 
-To accurately track relevant documents, each document is assigned a unique ID. By maintaining consistent IDs, we can manage changes and updates to the document set without affecting the evaluation process. This helps know which answer goes with which question.
+To accurately track relevant documents, each document is assigned a unique ID. Maintaining consistent IDs allows us to manage changes and updates to the document set without affecting the evaluation process. This helps know which answer goes with which question.
 
 Here are the steps to generate stable IDs:
 
 Step 1: Concatenate Document Attributes: Combine key attributes of the document (e.g., course name, question, and a portion of the text) into a single string. This ensures that the ID is unique to the specific content of the document.
+
 Step 2: Generate MD5 Hash: Use the MD5 hashing algorithm to create a hash from the concatenated string. MD5 is chosen for its balance of speed and uniqueness.
+
 Step 3: Extract a Substring of the Hash: To keep the ID concise, extract a substring (e.g., the first 8 characters) of the MD5 hash. This substring serves as the document's unique ID.
+
 Step 4: Assign the ID to the Document: Attach the generated ID to the document. This ID will be used to reference the document in the evaluation process.
+
+A simple function that describe the steps above as follows:
+```python
+# a simple function to generate hash ids based on the concatenation of all our dictionary values
+def generate_doc_id(doc:dict) -> dict:
+
+    # first let's Concatenate the different fields together
+    combined = "-".join(doc.values())
+
+    # now to hash our combined unique id
+    hash_object = hashlib.md5(combined.encode()) # converts string to bytes
+
+    # generates the MD5 hash of the encoded string and converts it to a hexidecimal string
+    hash_hex = hash_object.hexdigest()
+
+    return hash_hex[:8]  # only returning the first 8 characters of the hexidecimal string
+```
+Next, we want to use a LLM Model to generate questions for each record ID. But before we do that, we need to define our prompt template as well as a function that helps generate the questions based on the prompt.
+
+Our prompt template would look something like this:
+```python
+# now to create out prompt template - we will use the template provided in the course
+
+prompt_template = """
+You emulate a student who's taking our course.
+Formulate 5 questions this student might ask based on a FAQ record. The record
+should contain the answer to the questions, and the questions should be complete and not too short.
+If possible, use as fewer words as possible from the record. 
+
+The record:
+
+section: {section}
+question: {question}
+answer: {text}
+
+Provide the output in parsable JSON without using code blocks:
+
+["question1", "question2", ..., "question5"]
+""".strip()
+```
+
+You would notice that the template takes in the keys for each document dictionary as the argument to be put into the LLM model as context.
+
+Next, the function to generate the question.
+```python
+# next we want to write a simple function that generates the question for each record:
+def generate_questions(doc_dict):
+    # each key in doc_dict corresponds to a placeholder in prompt_template, and the associated value will be inserted into the template
+    prompt = prompt_template.format(**doc_dict)
+    
+    responses = openai_client.chat.completions.create(
+        model = 'gpt-3.5-turbo',
+        messages = [{'role':'user', 'content': prompt}]
+    )
+    
+    return responses.choices[0].message.content
+```
+We now have to run the following to get the function to generate 5 questions for each record.
+```python
+# now to generate the questions for each record id
+results = [{'Course': doc['course'], 'document_ID': doc['id'], 'Questions': generate_questions(doc)} for doc in tqdm(documents_updated)]
+```
+This would return a list of dictionaries, and all you need to do is to convert it into a dataframe before throwing out a `.csv` file in your local directory.
+
+> Note: The questions generated are a JSON response and can be converted into a python object using json.load() to do so. However, there are bound to be parsing issues in the conversion.
+
+Please refer to notebook that includes some parsing steps that was not covered in this README.md file [here]().
