@@ -11,6 +11,9 @@
   - [Introduction](#introduction)
   - [Understanding Documents and Indexes in Elasticsearch](#understanding-documents-and-indexes-in-elasticsearch)
   - [Steps to run Semantic Search using ElasticSearch](#steps-to-run-semantic-search-using-elasticsearch)
+- [3.3 Evaluating Retrieval](#33-evaluating-retrieval)
+  - [Introduction](#introduction-1)  
+  - [Generating The GroundTruth Datasets](#generating-the-ground-truth-datasets)
 
 ## 3.1 Introduction to Vector Databases
 
