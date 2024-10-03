@@ -446,4 +446,4 @@ This would return a list of dictionaries, and all you need to do is to convert i
 
 > Note: The questions generated are a JSON response and can be converted into a python object using json.load() to do so. However, there are bound to be parsing issues in the conversion.
 
-Please refer to notebook that includes some parsing steps that was not covered in this README.md file [here]().
+Please refer to notebook that includes some parsing steps that was not covered in this README.md file [here](https://github.com/peterchettiar/LLMzoomcamp_2024/blob/main/Module-3-vector-databases/generate_gt_data_example.ipynb).
