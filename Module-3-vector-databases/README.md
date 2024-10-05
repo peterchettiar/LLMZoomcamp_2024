@@ -450,3 +450,17 @@ This would return a list of dictionaries, and all you need to do is to convert i
 > Note: The questions generated are a JSON response and can be converted into a python object using json.load() to do so. However, there are bound to be parsing issues in the conversion.
 
 Please refer to notebook that includes some parsing steps that was not covered in this README.md file [here](https://github.com/peterchettiar/LLMzoomcamp_2024/blob/main/Module-3-vector-databases/generate_gt_data_example.ipynb).
+
+### Ranking Evaluation: Text Search
+
+In this section, we will be evaluating the two search engines we had created in the previous lecturs for text search; `elasticsearch` and `minsearch`. As a quick refresh, we would start off by intialising each search engine with their respective index settings as well as populating them with our `documents.json` file. 
+
+So once that is done, we have to evalute our search engine through the use of the following two metrics:
+1. `Hit Rate` - Hit rate is the percentage of successful results (or "hits") where the system returns at least one relevant document or result for a given query.
+2. `Mean Reciprocal Rank` - MRR is the average of the reciprocal ranks of the first relevant result for each query. The reciprocal rank for a query is the inverse of the rank (position) at which the first relevant result appears.
+
+But to do so, we need to execute each query that we had generated in our [ground_truth_dataset](https://github.com/peterchettiar/LLMzoomcamp_2024/blob/main/Module-3-vector-databases/ground-truth-data.csv) in the respective search engines to retrieve the `document_id` and compare it to the `document_id` and see if the result is the same or at least ranked closely.
+
+Hence, based on what was discussed the steps is as follows:
+
+1. 
