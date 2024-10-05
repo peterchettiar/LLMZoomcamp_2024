@@ -12,7 +12,7 @@
   - [Understanding Documents and Indexes in Elasticsearch](#understanding-documents-and-indexes-in-elasticsearch)
   - [Steps to run Semantic Search using ElasticSearch](#steps-to-run-semantic-search-using-elasticsearch)
 - [3.3 Evaluating Retrieval](#33-evaluating-retrieval)
-  - [Introduction](#introduction-1)  
+  - [Introduction](#introduction-1)
   - [Generating The GroundTruth Datasets](#generating-the-ground-truth-datasets)
 
 ## 3.1 Introduction to Vector Databases
@@ -385,6 +385,7 @@ Step 3: Extract a Substring of the Hash: To keep the ID concise, extract a subst
 Step 4: Assign the ID to the Document: Attach the generated ID to the document. This ID will be used to reference the document in the evaluation process.
 
 A simple function that describe the steps above as follows:
+
 ```python
 # a simple function to generate hash ids based on the concatenation of all our dictionary values
 def generate_doc_id(doc:dict) -> dict:
@@ -400,9 +401,11 @@ def generate_doc_id(doc:dict) -> dict:
 
     return hash_hex[:8]  # only returning the first 8 characters of the hexidecimal string
 ```
+
 Next, we want to use a LLM Model to generate questions for each record ID. But before we do that, we need to define our prompt template as well as a function that helps generate the questions based on the prompt.
 
 Our prompt template would look something like this:
+
 ```python
 # now to create out prompt template - we will use the template provided in the course
 
@@ -410,7 +413,7 @@ prompt_template = """
 You emulate a student who's taking our course.
 Formulate 5 questions this student might ask based on a FAQ record. The record
 should contain the answer to the questions, and the questions should be complete and not too short.
-If possible, use as fewer words as possible from the record. 
+If possible, use as fewer words as possible from the record.
 
 The record:
 
@@ -427,24 +430,28 @@ Provide the output in parsable JSON without using code blocks:
 You would notice that the template takes in the keys for each document dictionary as the argument to be put into the LLM model as context.
 
 Next, the function to generate the question.
+
 ```python
 # next we want to write a simple function that generates the question for each record:
 def generate_questions(doc_dict):
     # each key in doc_dict corresponds to a placeholder in prompt_template, and the associated value will be inserted into the template
     prompt = prompt_template.format(**doc_dict)
-    
+
     responses = openai_client.chat.completions.create(
         model = 'gpt-3.5-turbo',
         messages = [{'role':'user', 'content': prompt}]
     )
-    
+
     return responses.choices[0].message.content
 ```
+
 We now have to run the following to get the function to generate 5 questions for each record.
+
 ```python
 # now to generate the questions for each record id
 results = [{'Course': doc['course'], 'document_ID': doc['id'], 'Questions': generate_questions(doc)} for doc in tqdm(documents_updated)]
 ```
+
 This would return a list of dictionaries, and all you need to do is to convert it into a dataframe before throwing out a `.csv` file in your local directory.
 
 > Note: The questions generated are a JSON response and can be converted into a python object using json.load() to do so. However, there are bound to be parsing issues in the conversion.
@@ -453,9 +460,10 @@ Please refer to notebook that includes some parsing steps that was not covered i
 
 ### Ranking Evaluation: Text Search
 
-In this section, we will be evaluating the two search engines we had created in the previous lecturs for text search; `elasticsearch` and `minsearch`. As a quick refresh, we would start off by intialising each search engine with their respective index settings as well as populating them with our `documents.json` file. 
+In this section, we will be evaluating the two search engines we had created in the previous lecturs for text search; `elasticsearch` and `minsearch`. As a quick refresh, we would start off by intialising each search engine with their respective index settings as well as populating them with our [documents_with_ids.json](https://github.com/peterchettiar/LLMzoomcamp_2024/blob/main/Module-3-vector-databases/documents_with_ids.json) file.
 
 So once that is done, we have to evalute our search engine through the use of the following two metrics:
+
 1. `Hit Rate` - Hit rate is the percentage of successful results (or "hits") where the system returns at least one relevant document or result for a given query.
 2. `Mean Reciprocal Rank` - MRR is the average of the reciprocal ranks of the first relevant result for each query. The reciprocal rank for a query is the inverse of the rank (position) at which the first relevant result appears.
 
@@ -463,4 +471,4 @@ But to do so, we need to execute each query that we had generated in our [ground
 
 Hence, based on what was discussed the steps is as follows:
 
-1. 
+1.
