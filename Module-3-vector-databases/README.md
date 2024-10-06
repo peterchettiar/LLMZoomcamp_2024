@@ -14,6 +14,7 @@
 - [3.3 Evaluating Retrieval](#33-evaluating-retrieval)
   - [Introduction](#introduction-1)
   - [Generating The GroundTruth Datasets](#generating-the-ground-truth-datasets)
+  - [Ranking Evaluation: Text Search](#ranking-evaluation:-text-search)
 
 ## 3.1 Introduction to Vector Databases
 
@@ -509,4 +510,28 @@ if es_client.indices.exists(index="course-questions"):
 
 es_client.indices.create(index=index_name, body=index_settings)
 ```
-3. Followed by populating the index, then defining a search funtion - this had been done so in previous lectures but if need be feel free to follow the notebook for the current lecture [here]().
+3. Followed by populating the index, then defining a search funtion - this had been done so in previous lectures but if need be feel free to follow the notebook for the current lecture [here](https://github.com/peterchettiar/LLMzoomcamp_2024/blob/main/Module-3-vector-databases/evaluating_text_search.ipynb).
+4. After loading our golden truth dataset, we need to define a function to return the hit rate (i.e. 1 if any of the docs returned is relevant or otherwise 0) for each query from GTD.
+```python
+def hit_rate(course:str, doc_id:str, query:str):
+    query_res = elasticsearch_query(query=query, course=course)
+
+    hit_rate = [True if res["_source"]['id'] == doc_id else False for res in query_res]
+
+    if any(hit_rate):
+        return 1
+
+    return 0
+```
+5. Similaryly, we need to define a function for our Mean Reciprocal Rank.
+```python
+def mrr(course:str, doc_id:str, query:str) -> int:
+    query_res = elasticsearch_query(query=query, course=course)
+
+    id_res = [res['_source']['id'] for res in query_res]
+
+    for index, id in enumerate(id_res):
+        if id == doc_id:
+            return 1/(index+1)
+    return 0
+```
