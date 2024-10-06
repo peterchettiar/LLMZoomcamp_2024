@@ -14,7 +14,7 @@
 - [3.3 Evaluating Retrieval](#33-evaluating-retrieval)
   - [Introduction](#introduction-1)
   - [Generating The GroundTruth Datasets](#generating-the-ground-truth-datasets)
-  - [Ranking Evaluation: Text Search](#ranking-evaluation:-text-search)
+  - [Ranking Evaluation: Text Search](#ranking-evaluation-text-search)
 
 ## 3.1 Introduction to Vector Databases
 
