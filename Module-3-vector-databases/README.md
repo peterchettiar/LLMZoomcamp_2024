@@ -471,4 +471,42 @@ But to do so, we need to execute each query that we had generated in our [ground
 
 Hence, based on what was discussed the steps is as follows:
 
-1.
+1. Make sure to connect to `elasticsearch`, test the connection if needed.
+```python
+# remember to run `sudo chown -R 1000:1000 /tmp/elasticsearch_data` after docker-compose up
+es_client = Elasticsearch("http://localhost:9200")
+
+if es_client.ping():
+    print("Connected to ElasticSearch!")
+else:
+    print("Connection Failed.")
+```
+2. Next to create the index as well as defining its setttings.
+```python
+# now to create a new index as well as defining the index settings
+
+index_settings = {
+    "settings": {
+        "number_of_shards": 1,
+        "number_of_replicas": 0
+    },
+    "mappings": {
+        "properties": {
+            "text": {"type": "text"},
+            "section": {"type": "text"},
+            "question": {"type": "text"},
+            "course": {"type": "keyword"},
+            "id": {"type": "keyword"},
+        }
+    }
+}
+
+index_name = "course-questions"
+
+# lets delete and create a new index if it exists for ease of re-runs
+if es_client.indices.exists(index="course-questions"):
+    es_client.indices.delete(index="course-questions")
+
+es_client.indices.create(index=index_name, body=index_settings)
+```
+3. Followed by populating the index, then defining a search funtion - this had been done so in previous lectures but if need be feel free to follow the notebook for the current lecture [here]().
