@@ -535,4 +535,4 @@ def mrr(course:str, doc_id:str, query:str) -> int:
             return 1/(index+1)
     return 0
 ```
-Similar steps were performed for `minsearch` search engine as well and conclusively `elasticsearch` had a better performance and accuracy for retrieval of relevant documents based on the two metrics discussed in detail so far. Hence, I will not delve into the details for the `minsearch` evaluation functions. Instead I would encourage for you to go through the [evaluation-text-search (https://github.com/peterchettiar/LLMzoomcamp_2024/blob/main/Module-3-vector-databases/evaluating_text_search.ipynb) instead.
+Similar steps were performed for `minsearch` search engine as well and conclusively `elasticsearch` had a better performance and accuracy for retrieval of relevant documents based on the two metrics discussed in detail so far. Hence, I will not delve into the details for the `minsearch` evaluation functions. Instead I would encourage for you to go through the [evaluation-text-search](https://github.com/peterchettiar/LLMzoomcamp_2024/blob/main/Module-3-vector-databases/evaluating_text_search.ipynb) instead.
