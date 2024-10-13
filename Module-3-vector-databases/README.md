@@ -15,6 +15,7 @@
   - [Introduction](#introduction-1)
   - [Generating The GroundTruth Datasets](#generating-the-ground-truth-datasets)
   - [Ranking Evaluation: Text Search](#ranking-evaluation-text-search)
+  - [Ranking Evaluation: Vector Search](#ranking-evaluation-vector-search)
 
 ## 3.1 Introduction to Vector Databases
 
@@ -536,3 +537,164 @@ def mrr(course:str, doc_id:str, query:str) -> int:
     return 0
 ```
 Similar steps were performed for `minsearch` search engine as well, and conclusively `elasticsearch` had a better performance and accuracy for retrieval of relevant documents based on the two metrics discussed in detail so far. Hence, I will not delve into the details for the `minsearch` evaluation functions. Instead I would encourage for you to go through the [evaluation-text-search](https://github.com/peterchettiar/LLMzoomcamp_2024/blob/main/Module-3-vector-databases/evaluating_text_search.ipynb) instead.
+
+### Ranking Evaluation: Vector Search
+
+This process is very similar to our previous section on text search, with small minor changes.
+
+1. Index settings - we need to define our three dense vectors (i.e. `question_vector`,`text_vector`,`question_text_vector`) as these would be the fields that our query vector would be performing the search on in our index.
+```python
+index_settings = {
+    "settings": {
+        "number_of_shards": 1,
+        "number_of_replicas": 0
+    },
+    "mappings": {
+        "properties": {
+            "text": {"type": "text"},
+            "section": {"type": "text"},
+            "question": {"type": "text"},
+            "course": {"type": "keyword"},
+            "id": {"type": "keyword"},
+            "question_vector" :{
+                "type": "dense_vector",
+                "dims": 384,
+                "index": True,
+                "similarity": "cosine"
+            },
+            "text_vector":{
+                "type": "dense_vector",
+                "dims": 384,
+                "index": True,
+                "similarity": "cosine", # there is also another option of using dotp product which should yield the same result
+            },
+            "question_text_vector":{
+                "type": "dense_vector",
+                "dims": 384,
+                "index": True,
+                "similarity": "cosine"
+            }
+        }
+    }
+}
+```
+2. Next, we want to intialise as well as transform our above mentioned fields into their respective dense vectors / vector embeddings.
+```python
+# Now that we have defined the schema of our index, we can proceed create the vector embeddings before populating it
+
+# but first we need to load a pretrained sentence transformer model that would convert our questions and text to vector embeddings
+model = SentenceTransformer("all-MiniLM-L12-v2")
+
+# next we want to update our documents variable to include our vector embeddings while retaining the original data
+documents = [doc.update({"question_vector": model.encode(doc["question"]),
+                         "text_vector": model.encode(doc["text"]),
+                         "question_text_vector": model.encode(doc["question"] + '-' + doc["text"])}) or doc for doc in documents]
+```
+3. Now to define our search query function - you would notice there are 3 arguments for the function (field, vector and course), field refers to the dense vector that our query vector would be compared with and relevant documents retrieved.
+```python
+# last step for this function would be to define the search query function for elasticsearch
+def elastic_search_knn(field, vector, course):
+    knn = {
+        "field": field,
+        "query_vector": vector,
+        "k": 5,
+        "num_candidates": 10000,
+        "filter": {
+            "term": {
+                "course": course
+            }
+        }
+    }
+
+    search_query = {
+        "knn": knn,
+        "_source": ["text", "section", "question", "course", "id"]
+    }
+
+    es_results = es_client.search(
+        index=index_name,
+        body=search_query
+    )
+
+    result_docs = [hit['_source'] for hit in es_results['hits']['hits']]
+
+    return result_docs
+```
+4. Lastly, let us run the following function to evaluate the performance of `elasticsearch` based on `hit rate` and `mrr`. The functions for the metric called within the evaluation function is very similar to the ones defined in text search. Only difference is the `index_field` argument that we mentioned in the previous point.
+```python
+def evaluate(index_field, df):
+    # calculating hit rate
+    df[f'hit_rate_{index_field}'] = df.apply(lambda x : hit_rate_elasticserach(index_field,x['Course'],x['document_ID'],x['Question']), axis=1)
+    hit_rate = df[f'hit_rate_{index_field}'].sum() / df[f'hit_rate_{index_field}'].count()
+
+    # calculating mrr
+    df[f'{index_field}_recip_rank'] = df.apply(lambda x : mrr_elasticsearch(index_field,x['Course'],x['document_ID'],x['Question']), axis=1)
+    mrr = df[f'{index_field}_recip_rank'].sum() / df[f'{index_field}_recip_rank'].count() 
+
+    # we want to drop these columns that we created
+    df.drop(columns=[f"hit_rate_{index_field}", f"{index_field}_recip_rank"], inplace=True)
+
+    return {
+        f'hit rate for {index_field}' : hit_rate,
+        f'mrr for {index_field}' : mrr
+    }
+```
+5. As an extra step in order to improve the performance of `elasticsearch` we can combine our 3 vector embeddings in our index into 1 vector and compare our query vector. Following is an updated function to do just that using the `script_score` feature.
+```python
+# updated elasticsearch search function - combining all three dense vectors
+def elastic_search_knn_combined(vector, course):
+    search_query = {
+        "size": 5,
+        "query": {
+            "bool": {
+                "must": [
+                    {
+                        "script_score": {
+                            "query": {
+                                "term": {
+                                    "course": course
+                                }
+                            },
+                            "script": {
+                                "source": """
+                                // Calculate cosine similarity for all vectors
+                                double sim1 = cosineSimilarity(params.query_vector, 'question_vector');
+                                double sim2 = cosineSimilarity(params.query_vector, 'text_vector');
+                                double sim3 = cosineSimilarity(params.query_vector, 'question_text_vector');
+
+                                // Map cosine similarity from range [-1,1] to [0,1]
+                                sim1 = (sim1 + 1) / 2;
+                                sim2 = (sim2 + 1) / 2;
+                                sim3 = (sim3 + 1) / 2;
+
+                                // Combine the scores (e.g., sum of average)
+                                return sim1 + sim2 + sim3;
+                                """,
+                                "params": {
+                                    "query_vector": vector
+                                }
+                            }
+                        }
+                    }
+                ],
+                "filter": {
+                    "term": {
+                        "course": course
+                    }
+                }
+            }
+        },
+        "_source" : ["text", "section", "question", "course", "id"]
+    }
+
+    es_results = es_client.search(
+        index=index_name,
+        body=search_query
+    )
+
+    result_docs = [hit['_source'] for hit in es_results['hits']['hits']]
+
+    return result_docs
+```
+
+> Note: In the script section of the function, we have re-map the scores for cosine similarity as it does return negative scores which is not accepted by elastic search.
