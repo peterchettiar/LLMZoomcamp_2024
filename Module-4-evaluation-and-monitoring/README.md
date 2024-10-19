@@ -3,7 +3,7 @@
 ### Table of contents
 
 - [4.1 Introduction to monitoring answer quality](#41-introduction-to-monitoring-answer-quality)
-  - [Monitoring answer quality of LLMs](#-monitoring-answer-quality-of-llms)
+  - [Monitoring answer quality of LLMs](#monitoring-answer-quality-of-llms)
 
 ## 4.1 Introduction to monitoring answer quality
 
